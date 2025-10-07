@@ -31,4 +31,11 @@ public class ToolController {
         return ResponseEntity.status(HttpStatus.CREATED).body(toolService.addTool(dto));
     }
 
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<Void> deleteToolById(@PathVariable Long id) {
+        toolService.deleteToolById(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

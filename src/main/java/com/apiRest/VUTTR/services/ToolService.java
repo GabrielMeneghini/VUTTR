@@ -27,4 +27,8 @@ public class ToolService {
         return toolRepository.save(new Tool(dto));
     }
 
+    public void deleteToolById(Long id) {
+        toolRepository.deleteById(id);
+    }
+
 }
