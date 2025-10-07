@@ -21,8 +21,8 @@ public class ToolController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    public List<ToolDTO> findAll(@RequestParam(required = false) String tag) {
-        return toolService.findAll(tag);
+    public ResponseEntity<List<ToolDTO>> findAll(@RequestParam(required = false) String tag) {
+        return ResponseEntity.ok(toolService.findAll(tag));
     }
 
     @PostMapping
