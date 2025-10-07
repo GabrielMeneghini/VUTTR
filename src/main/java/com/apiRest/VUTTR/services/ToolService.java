@@ -1,6 +1,8 @@
 package com.apiRest.VUTTR.services;
 
+import com.apiRest.VUTTR.dtos.ToolCreateDTO;
 import com.apiRest.VUTTR.dtos.ToolDTO;
+import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.repositories.ToolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,10 @@ public class ToolService {
         } else {
             return toolRepository.findByTag(tag).stream().map(ToolDTO::new).toList();
         }
+    }
+
+    public Tool addTool(ToolCreateDTO dto) {
+        return toolRepository.save(new Tool(dto));
     }
 
 }

@@ -4,12 +4,11 @@ import com.apiRest.VUTTR.entities.Tool;
 
 import java.util.List;
 
-public record ToolDTO(
-        Long id,
-        String title,
-        String link,
-        String description,
-        List<String> tags
+public record ToolDTO(Long id,
+                      String title,
+                      String link,
+                      String description,
+                      List<String> tags
 ) {
 
     public ToolDTO(Tool t) {

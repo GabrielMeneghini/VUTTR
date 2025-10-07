@@ -1,5 +1,6 @@
 package com.apiRest.VUTTR.entities;
 
+import com.apiRest.VUTTR.dtos.ToolCreateDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 public class Tool {
 
+    // Fields ----------------------------------------------------------------------------------------------------------
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,5 +33,13 @@ public class Tool {
     )
     @Column(name = "tag")
     private List<String> tags;
+
+    // Constructors ----------------------------------------------------------------------------------------------------
+    public Tool(ToolCreateDTO dto) {
+        this.title = dto.title();
+        this.link = dto.link();
+        this.description = dto.description();
+        this.tags = dto.tags();
+    }
 
 }
