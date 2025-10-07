@@ -13,7 +13,12 @@ public class ToolService {
     @Autowired
     private ToolRepository toolRepository;
 
-    public List<ToolDTO> findAll() {
-        return toolRepository.findAll().stream().map(ToolDTO::new).toList();
+    public List<ToolDTO> findAll(String tag) {
+        if(tag==null || tag.isBlank()) {
+            return toolRepository.findAll().stream().map(ToolDTO::new).toList();
+        } else {
+            return toolRepository.findByTag(tag).stream().map(ToolDTO::new).toList();
+        }
     }
+
 }
