@@ -3,6 +3,7 @@ package com.apiRest.VUTTR.services;
 import com.apiRest.VUTTR.dtos.ToolCreateDTO;
 import com.apiRest.VUTTR.dtos.ToolDTO;
 import com.apiRest.VUTTR.entities.Tool;
+import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
 import com.apiRest.VUTTR.repositories.ToolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,9 @@ public class ToolService {
     }
 
     public void deleteToolById(Long id) {
+        if(!toolRepository.existsById(id)) {
+            throw new ResourceNotFoundException("No tool was found for id " + id + ".");
+        }
         toolRepository.deleteById(id);
     }
 
