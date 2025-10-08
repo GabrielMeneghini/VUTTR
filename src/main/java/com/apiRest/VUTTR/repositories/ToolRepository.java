@@ -20,4 +20,8 @@ public interface ToolRepository extends JpaRepository<Tool, Long> {
             """)
     List<Tool> findByTag(@Param("tag") String tag);
 
+    boolean existsByTitle(String title);
+
+    boolean existsByLink(String link);
+
 }
