@@ -16,7 +16,7 @@ public class ToolService {
     @Autowired
     private ToolRepository toolRepository;
 
-    public List<ToolDTO> findAll(String tag) {
+    public List<ToolDTO> findTools(String tag) {
         if(tag==null || tag.isBlank()) {
             return toolRepository.findAll().stream().map(ToolDTO::new).toList();
         } else {
