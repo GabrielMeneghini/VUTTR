@@ -14,7 +14,7 @@ public class UniqueTitleValidator implements ConstraintValidator<UniqueTitle, St
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
         if (value == null || value.isBlank()) {
-            return true; // outras validações cuidam disso
+            return true;
         }
         return !toolRepository.existsByTitle(value);
     }
