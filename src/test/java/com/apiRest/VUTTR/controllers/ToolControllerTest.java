@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -76,6 +78,56 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[*].title", containsInAnyOrder("json-server", "fastify"))
         );
+    }
+
+    @Test
+    @DisplayName("Should save and return the new Tool when the request JSON is valid")
+    void addTool_Scenario01() throws Exception {
+            mockMvc.perform(post("/tools")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""
+                            {
+                                "title": "Duolingo",
+                                "link": "https://www.duolingo.com/",
+                                "description": "A popular language learning platform offering gamified lessons, exercises, and practice in dozens of languages.",
+                                "tags": ["language", "learning", "education", "gamified", "mobile", "web", "courses"]
+                            }
+                            """))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.title").value("Duolingo"))
+                    .andExpect(jsonPath("$.link").value("https://www.duolingo.com/"))
+                    .andExpect(jsonPath("$.description").value("A popular language learning platform offering gamified lessons, exercises, and practice in dozens of languages."))
+                    .andExpect(jsonPath("$.tags", hasSize(7)));
+    }
+    @Test
+    @DisplayName("Should return status 400 when JSON has blank fields")
+    void addTool_Scenario02() throws Exception {
+        mockMvc.perform(post("/tools")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                                "title": "",
+                                "link": "https://www.duolingo.com/",
+                                "description": "A popular language learning platform offering gamified lessons, exercises, and practice in dozens of languages.",
+                                "tags": ["language", "learning", "education", "gamified", "mobile", "web", "courses"]
+                            }
+                            """))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    @DisplayName("Should return status 400 when JSON link is invalid")
+    void addTool_Scenario03() throws Exception {
+        mockMvc.perform(post("/tools")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                                "title": "Duolingo",
+                                "link": "duolingo",
+                                "description": "A popular language learning platform offering gamified lessons, exercises, and practice in dozens of languages.",
+                                "tags": ["language", "learning", "education", "gamified", "mobile", "web", "courses"]
+                            }
+                            """))
+                .andExpect(status().isBadRequest());
     }
 
     private void createTools() {
