@@ -17,8 +17,7 @@ import java.util.Arrays;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -128,6 +127,21 @@ class ToolControllerTest {
                             }
                             """))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should return status 200 when Tool is successfully deleted")
+    void deleteToolById_Scenario01() throws Exception {
+        var savedTool = toolRepository.save(new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
+
+        mockMvc.perform(delete("/tools/" + savedTool.getId()))
+                .andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName("Should return status 404 when Tool id doesn't exist")
+    void deleteToolById_Scenario02() throws Exception {
+        mockMvc.perform(delete("/tools/7"))
+                .andExpect(status().isNotFound());
     }
 
     private void createTools() {
