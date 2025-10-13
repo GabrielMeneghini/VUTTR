@@ -22,7 +22,6 @@ class ToolRepositoryTest {
     @Test
     @DisplayName("Should return an empty list if no Tools were found with the informed tag")
     void findByTag_Scenario01() {
-
         // Arrange
         String tag = "nonexistentTag";
         Tool tool1 = new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
