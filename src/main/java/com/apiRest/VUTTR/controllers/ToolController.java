@@ -36,7 +36,7 @@ public class ToolController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Tool> addTool(@Valid @RequestBody ToolCreateDTO dto) {
+    public ResponseEntity<ToolDTO> addTool(@Valid @RequestBody ToolCreateDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(toolService.addTool(dto));
     }
 

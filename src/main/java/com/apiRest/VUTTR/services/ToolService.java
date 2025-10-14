@@ -24,8 +24,8 @@ public class ToolService {
         }
     }
 
-    public Tool addTool(ToolCreateDTO dto) {
-        return toolRepository.save(new Tool(dto));
+    public ToolDTO addTool(ToolCreateDTO dto) {
+        return new ToolDTO(toolRepository.save(new Tool(dto)));
     }
 
     public void deleteToolById(Long id) {
