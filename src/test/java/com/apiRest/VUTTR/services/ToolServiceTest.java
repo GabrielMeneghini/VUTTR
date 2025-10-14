@@ -69,4 +69,5 @@ class ToolServiceTest {
         assertEquals(2, result.size());
         assertEquals("fastify", result.get(1).title());
     }
+
 }

@@ -5,6 +5,8 @@ import com.apiRest.VUTTR.repositories.ToolRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -77,6 +79,13 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[*].title", containsInAnyOrder("json-server", "fastify"))
         );
+    }
+    @ParameterizedTest
+    @DisplayName("Should return status 400 for invalid tag")
+    @ValueSource(strings = {"0", "0123456789012345678901234567890", "@node"})
+    void findTools_findByTag_Scenario03_InvalidTags(String tag) throws Exception {
+        mockMvc.perform(get("/tools?tag=" + tag))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
