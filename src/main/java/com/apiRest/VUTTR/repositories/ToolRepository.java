@@ -16,7 +16,7 @@ public interface ToolRepository extends JpaRepository<Tool, Long> {
             FROM tools t
             INNER JOIN tool_tags tt
                 ON t.id = tt.tool_id
-            WHERE tt.tag LIKE :tag
+            WHERE tt.tag ILIKE :tag
             """)
     List<Tool> findByTag(@Param("tag") String tag);
 
