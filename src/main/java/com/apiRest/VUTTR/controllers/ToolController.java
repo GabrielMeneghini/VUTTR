@@ -2,6 +2,7 @@ package com.apiRest.VUTTR.controllers;
 
 import com.apiRest.VUTTR.dtos.ToolCreateDTO;
 import com.apiRest.VUTTR.dtos.ToolDTO;
+import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
 import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.services.ToolService;
 import jakarta.validation.Valid;
@@ -45,6 +46,12 @@ public class ToolController {
     public ResponseEntity<Void> deleteToolById(@PathVariable Long id) {
         toolService.deleteToolById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}")
+    @Transactional
+    public ResponseEntity<ToolDTO> updateTool(@RequestBody @Valid ToolUpdateDTO toolUpdateDTO, @PathVariable Long id) {
+        return ResponseEntity.ok(toolService.updateTool(toolUpdateDTO, id));
     }
 
 }
