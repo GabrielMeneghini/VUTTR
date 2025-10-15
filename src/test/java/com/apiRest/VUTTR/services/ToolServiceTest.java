@@ -2,6 +2,7 @@ package com.apiRest.VUTTR.services;
 
 import com.apiRest.VUTTR.dtos.ToolDTO;
 import com.apiRest.VUTTR.entities.Tool;
+import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
 import com.apiRest.VUTTR.repositories.ToolRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,8 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,4 +70,24 @@ class ToolServiceTest {
         assertEquals("fastify", result.get(1).title());
     }
 
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException if id doesn't exist")
+    void deleteToolById_Scenario01() {
+        when(toolRepository.existsById(0L)).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class, () -> toolService.deleteToolById(0L));
+        verify(toolRepository, never()).deleteById(any());
+        verifyNoMoreInteractions(toolRepository);
+    }
+    @Test
+    @DisplayName("Should delete Tool if id exists")
+    void deleteToolById_Scenario02() {
+        when(toolRepository.existsById(0L)).thenReturn(true);
+
+        toolService.deleteToolById(0L);
+
+        verify(toolRepository).existsById(0L);
+        verify(toolRepository).deleteById(0L);
+        verifyNoMoreInteractions(toolRepository);
+    }
 }
