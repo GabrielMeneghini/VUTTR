@@ -16,7 +16,7 @@ public class UniqueTitleValidator implements ConstraintValidator<UniqueTitle, St
         if (value == null || value.isBlank()) {
             return true;
         }
-        return !toolRepository.existsByTitle(value);
+        return !toolRepository.existsByTitleIgnoreCase(value);
     }
 
 }
