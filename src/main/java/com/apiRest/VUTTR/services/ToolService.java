@@ -8,6 +8,7 @@ import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
 import com.apiRest.VUTTR.repositories.ToolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class ToolService {
     @Autowired
     private ToolRepository toolRepository;
 
+    @Transactional(readOnly = true)
     public List<ToolDTO> findTools(String tag) {
         if(tag==null || tag.isBlank()) {
             return toolRepository.findAll().stream().map(ToolDTO::new).toList();
@@ -25,10 +27,12 @@ public class ToolService {
         }
     }
 
+    @Transactional
     public ToolDTO addTool(ToolCreateDTO dto) {
         return new ToolDTO(toolRepository.save(new Tool(dto)));
     }
 
+    @Transactional
     public void deleteToolById(Long id) {
         if(!toolRepository.existsById(id)) {
             throw new ResourceNotFoundException("No tool was found for id " + id + ".");
@@ -36,6 +40,7 @@ public class ToolService {
         toolRepository.deleteById(id);
     }
 
+    @Transactional
     public ToolDTO updateTool(ToolUpdateDTO toolUpdateDTO, Long id) {
         var tool = toolRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No tool was found for id " + id + "."));
 

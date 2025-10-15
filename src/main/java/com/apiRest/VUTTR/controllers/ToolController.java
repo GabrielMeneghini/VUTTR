@@ -25,7 +25,6 @@ public class ToolController {
     private ToolService toolService;
 
     @GetMapping
-    @Transactional(readOnly = true)
     @Validated
     public ResponseEntity<List<ToolDTO>> findTools(
             @RequestParam(required = false)
@@ -36,20 +35,17 @@ public class ToolController {
     }
 
     @PostMapping
-    @Transactional
     public ResponseEntity<ToolDTO> addTool(@Valid @RequestBody ToolCreateDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(toolService.addTool(dto));
     }
 
     @DeleteMapping("/{id}")
-    @Transactional
     public ResponseEntity<Void> deleteToolById(@PathVariable Long id) {
         toolService.deleteToolById(id);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}")
-    @Transactional
     public ResponseEntity<ToolDTO> updateTool(@RequestBody @Valid ToolUpdateDTO toolUpdateDTO, @PathVariable Long id) {
         return ResponseEntity.ok(toolService.updateTool(toolUpdateDTO, id));
     }
