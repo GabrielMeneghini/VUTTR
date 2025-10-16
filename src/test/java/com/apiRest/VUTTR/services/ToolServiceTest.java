@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -73,7 +74,7 @@ class ToolServiceTest {
     @Test
     @DisplayName("Should throw ResourceNotFoundException if id doesn't exist")
     void deleteToolById_Scenario01() {
-        when(toolRepository.existsById(0L)).thenReturn(false);
+        when(toolRepository.findById(0L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> toolService.deleteToolById(0L));
         verify(toolRepository, never()).deleteById(any());
@@ -82,12 +83,13 @@ class ToolServiceTest {
     @Test
     @DisplayName("Should delete Tool if id exists")
     void deleteToolById_Scenario02() {
-        when(toolRepository.existsById(0L)).thenReturn(true);
+        var tool = new Tool(0L, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
+        when(toolRepository.findById(0L)).thenReturn(Optional.of(tool));
 
         toolService.deleteToolById(0L);
 
-        verify(toolRepository).existsById(0L);
-        verify(toolRepository).deleteById(0L);
+        verify(toolRepository).deleteById(tool.getId());
         verifyNoMoreInteractions(toolRepository);
     }
+
 }
