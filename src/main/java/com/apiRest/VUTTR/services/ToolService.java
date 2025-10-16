@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ToolService {
@@ -33,16 +35,25 @@ public class ToolService {
     }
 
     @Transactional
+    public ToolDTO addTagsInTool(List<String> newTags, Long id) {
+        Tool tool = validateToolExists(id);
+
+        Set<String> uniqueNewTags = new HashSet<>(newTags.stream().map(String::toLowerCase).toList());
+
+        tool.getTags().addAll(uniqueNewTags);
+        return new ToolDTO(tool);
+    }
+
+    @Transactional
     public void deleteToolById(Long id) {
-        if(!toolRepository.existsById(id)) {
-            throw new ResourceNotFoundException("No tool was found for id " + id + ".");
-        }
-        toolRepository.deleteById(id);
+        Tool tool = validateToolExists(id);
+
+        toolRepository.deleteById(tool.getId());
     }
 
     @Transactional
     public ToolDTO updateTool(ToolUpdateDTO toolUpdateDTO, Long id) {
-        var tool = toolRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No tool was found for id " + id + "."));
+        Tool tool = validateToolExists(id);
 
         if(toolUpdateDTO.title() != null && !toolUpdateDTO.title().isBlank()) {
             tool.setTitle(toolUpdateDTO.title().trim());
@@ -57,4 +68,8 @@ public class ToolService {
         return new ToolDTO(tool);
     }
 
+    private Tool validateToolExists(Long id) {
+        return toolRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("No tool was found for id " + id + "."));
+    }
 }

@@ -3,19 +3,19 @@ package com.apiRest.VUTTR.controllers;
 import com.apiRest.VUTTR.dtos.ToolCreateDTO;
 import com.apiRest.VUTTR.dtos.ToolDTO;
 import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
-import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.services.ToolService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/tools")
@@ -37,6 +37,12 @@ public class ToolController {
     @PostMapping
     public ResponseEntity<ToolDTO> addTool(@Valid @RequestBody ToolCreateDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(toolService.addTool(dto));
+    }
+
+    @PostMapping("/{id}")
+    @Validated
+    public ResponseEntity<ToolDTO> addTagsInTool(@RequestBody @NotEmpty List<String> newTags, @PathVariable Long id) {
+        return ResponseEntity.ok(toolService.addTagsInTool(newTags, id));
     }
 
     @DeleteMapping("/{id}")
