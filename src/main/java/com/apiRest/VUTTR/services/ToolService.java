@@ -10,9 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ToolService {
@@ -31,16 +30,19 @@ public class ToolService {
 
     @Transactional
     public ToolDTO addTool(ToolCreateDTO dto) {
-        return new ToolDTO(toolRepository.save(new Tool(dto)));
+        var tool = new Tool(dto);
+        removeDuplicateTags(tool);
+
+        return new ToolDTO(toolRepository.save(tool));
     }
 
     @Transactional
     public ToolDTO addTagsInTool(List<String> newTags, Long id) {
         Tool tool = validateToolExists(id);
 
-        Set<String> uniqueNewTags = new HashSet<>(newTags.stream().map(String::toLowerCase).toList());
+        tool.getTags().addAll(newTags);
+        removeDuplicateTags(tool);
 
-        tool.getTags().addAll(uniqueNewTags);
         return new ToolDTO(tool);
     }
 
@@ -72,4 +74,12 @@ public class ToolService {
         return toolRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("No tool was found for id " + id + "."));
     }
+
+    private void removeDuplicateTags(Tool tool) {
+        tool.setTags(new ArrayList<>(tool.getTags()
+                .stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toCollection(LinkedHashSet::new))));
+    }
+
 }
