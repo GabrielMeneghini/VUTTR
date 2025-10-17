@@ -17,8 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -136,6 +135,49 @@ class ToolControllerTest {
                             }
                             """))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should save the new tags and return the affected Tool when JSON is valid")
+    void addTagsInTool_Scenario01() throws Exception  {
+        var tool = toolRepository.save(new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
+
+        mockMvc.perform(post("/tools/" + tool.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        ["organization", "newTag", "NEWTAG", "Calendar", "newTag2"]
+                        """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Notion"))
+                .andExpect(jsonPath("$.tags", contains(
+                                "organization",
+                                "planning",
+                                "collaboration",
+                                "writing",
+                                "calendar",
+                                "newtag",
+                                "newtag2")));
+    }
+    @Test
+    @DisplayName("Should return status 400 when JSON is empty")
+    void addTagsInTool_Scenario02() throws Exception {
+        mockMvc.perform(post("/tools/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        []
+                        """))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    @DisplayName("Should return status 404 when Tool id doesn't exist")
+    void addTagsInTool_Scenario03() throws Exception {
+        long nonExistentId = toolRepository.count() + 1;
+        mockMvc.perform(post("/tools/" + nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        ["organization", "newTag", "NEWTAG", "Calendar", "newTag2"]
+                        """))
+                .andExpect(status().isNotFound());
     }
 
     @Test
