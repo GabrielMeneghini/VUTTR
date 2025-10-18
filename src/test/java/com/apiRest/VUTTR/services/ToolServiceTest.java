@@ -1,5 +1,6 @@
 package com.apiRest.VUTTR.services;
 
+import com.apiRest.VUTTR.dtos.ToolCreateDTO;
 import com.apiRest.VUTTR.dtos.ToolDTO;
 import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
@@ -11,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +50,6 @@ class ToolServiceTest {
         assertEquals(3, result.size());
         assertEquals("json-server", result.get(1).title());
     }
-
     @Test
     @DisplayName("Should return only attaching results when tag is specified")
     void findTools_findByTag_Scenario01() {
@@ -72,7 +73,51 @@ class ToolServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException if id doesn't exist")
+    @DisplayName("Should remove duplicate tags")
+    void addTool_Scenario01() {
+        ToolCreateDTO dto = new ToolCreateDTO(
+                "hotel",
+                "https://github.com/typicode/hotel",
+                "Local app manager. Start apps within your browser, developer tool with local .localhost domain and https out of the box.",
+                new ArrayList<>(Arrays.asList("node", "organizing", "webapps", "domain", "developer", "https", "proxy", "Organizing", "TAG", "Tag", "tag", "node")));
+
+        when(toolRepository.save(any(Tool.class))).thenAnswer(a -> {
+                Tool t = a.getArgument(0);
+                t.setId(1L);
+                return t;
+        });
+
+        ToolDTO result = toolService.addTool(dto);
+
+        assertEquals(8, result.tags().size());
+        assertTrue(result.tags().containsAll(Arrays.asList("node", "organizing", "webapps", "domain", "developer", "https", "proxy", "tag")));
+    }
+
+    @Test
+    @DisplayName("Should save all the new tags without duplicates")
+    void addTagsInTool_Scenario01() {
+        List<String> newTags = new ArrayList<>(Arrays.asList("api", "newTag", "Github", "NEWTAG", "NEWtAG2"));
+        var tool = new Tool(0L, "json-server", "https://github.com/typicode/json-server"
+                , "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges."
+                , new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
+        when(toolRepository.findById(tool.getId())).thenReturn(Optional.of(tool));
+
+        toolService.addTagsInTool(newTags, tool.getId());
+
+        assertEquals(8, tool.getTags().size());
+        assertTrue(tool.getTags().containsAll(List.of("api", "json", "schema", "node", "github", "rest", "newtag", "newtag2")));
+    }
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException if Tool id doesn't exist")
+    void addTagsInTool_Scenario02() {
+        when(toolRepository.findById(0L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> toolService.addTagsInTool(List.of("newTag"), 0L));
+        verifyNoMoreInteractions(toolRepository);
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException if Tool id doesn't exist")
     void deleteToolById_Scenario01() {
         when(toolRepository.findById(0L)).thenReturn(Optional.empty());
 
