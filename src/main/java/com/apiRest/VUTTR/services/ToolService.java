@@ -6,6 +6,7 @@ import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
 import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
 import com.apiRest.VUTTR.repositories.ToolRepository;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +55,23 @@ public class ToolService {
     }
 
     @Transactional
+    public void deleteToolTagByName(Long toolId, @NotEmpty List<String> toBeDeletedTags) {
+        var tool = validateToolExists(toolId);
+
+        var lowerCaseTags = toBeDeletedTags.stream().map(String::toLowerCase).toList();
+
+        // Iterates over lowerCaseTags and removes matching tags from the tool's tag list
+        for(int x=0; x<lowerCaseTags.size(); x++) {
+            for(int y=0; y<tool.getTags().size(); y++) {
+                if(lowerCaseTags.get(x).equals(tool.getTags().get(y))) {
+                    tool.getTags().remove(y);
+                    break;
+                }
+            }
+        }
+    }
+
+    @Transactional
     public ToolDTO updateTool(ToolUpdateDTO toolUpdateDTO, Long id) {
         Tool tool = validateToolExists(id);
 
@@ -81,5 +99,4 @@ public class ToolService {
                 .map(String::toLowerCase)
                 .collect(Collectors.toCollection(LinkedHashSet::new))));
     }
-
 }

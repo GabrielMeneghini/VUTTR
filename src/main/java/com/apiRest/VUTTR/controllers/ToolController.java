@@ -15,7 +15,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/tools")
@@ -40,7 +39,6 @@ public class ToolController {
     }
 
     @PostMapping("/{id}")
-    @Validated
     public ResponseEntity<ToolDTO> addTagsInTool(@RequestBody @NotEmpty List<String> newTags, @PathVariable Long id) {
         return ResponseEntity.ok(toolService.addTagsInTool(newTags, id));
     }
@@ -49,6 +47,12 @@ public class ToolController {
     public ResponseEntity<Void> deleteToolById(@PathVariable Long id) {
         toolService.deleteToolById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{toolId}/tags")
+    public ResponseEntity<Void> deleteToolTagByName(@PathVariable Long toolId, @RequestBody @NotEmpty List<String> toBeDeletedTags) {
+        toolService.deleteToolTagByName(toolId, toBeDeletedTags);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}")
