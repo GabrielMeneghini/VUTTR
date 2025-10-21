@@ -60,4 +60,9 @@ public class ToolController {
         return ResponseEntity.ok(toolService.updateTool(toolUpdateDTO, id));
     }
 
+    @PutMapping("/{toolId}/tags")
+    public ResponseEntity<ToolDTO> updateAllToolTags(@PathVariable Long toolId, @RequestBody @NotEmpty List<String> allNewTags) {
+        return ResponseEntity.ok().body(toolService.updateAllToolTags(toolId, allNewTags));
+    }
+
 }

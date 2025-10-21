@@ -88,6 +88,16 @@ public class ToolService {
         return new ToolDTO(tool);
     }
 
+    @Transactional
+    public ToolDTO updateAllToolTags(Long toolId, List<String> allNewTags) {
+        var tool = validateToolExists(toolId);
+
+        tool.setTags(allNewTags);
+        removeDuplicateTags(tool);
+
+        return new ToolDTO(tool);
+    }
+
     private Tool validateToolExists(Long id) {
         return toolRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("No tool was found for id " + id + "."));
