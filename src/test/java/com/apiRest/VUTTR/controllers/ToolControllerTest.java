@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -195,11 +197,44 @@ class ToolControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    @DisplayName("Should return status 204 when tags were successfully deleted")
+    void deleteToolTagByName_Scenario01() throws Exception {
+        var tool = toolRepository.save(new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
+
+        mockMvc.perform(delete("/tools/" + tool.getId() + "/tags")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("[\"planning\", \"writing\"]"))
+                .andExpect(status().isNoContent());
+
+        var updatedTool = toolRepository.findById(tool.getId()).get();
+        assertFalse(updatedTool.getTags().containsAll(Arrays.asList("planning", "writing")));
+        assertTrue(updatedTool.getTags().containsAll(Arrays.asList("organization", "collaboration", "calendar")));
+    }
+    @Test
+    @DisplayName("Should return status 400 when JSON is empty")
+    void deleteToolTagByName_Scenario02() throws Exception {
+        var tool = toolRepository.save(new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
+
+        mockMvc.perform(delete("/tools/" + tool.getId() + "/tags")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("[]"))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    @DisplayName("Should return status 404 when Tool id doesn't exist")
+    void deleteToolTagByName_Scenario03() throws Exception {
+        mockMvc.perform(delete("/tools/" + toolRepository.count()+1 + "/tags")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("[\"planning\", \"writing\"]"))
+                .andExpect(status().isNotFound());
+    }
+
     private void createTools() {
         Tool tool1 = new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
         Tool tool2 = new Tool(null, "json-server", "https://github.com/typicode/json-server", "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.", Arrays.asList("api", "json", "schema", "node", "github", "rest"));
         Tool tool3 = new Tool(null, "fastify", "https://www.fastify.io/", "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.", Arrays.asList("web", "framework", "node", "http2", "https", "localhost"));
         toolRepository.saveAll(Arrays.asList(tool1, tool2, tool3));
     }
-
 }

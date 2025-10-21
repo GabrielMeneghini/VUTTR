@@ -1,12 +1,14 @@
 package com.apiRest.VUTTR.repositories;
 
 import com.apiRest.VUTTR.entities.Tool;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ToolRepository extends JpaRepository<Tool, Long> {
@@ -19,6 +21,9 @@ public interface ToolRepository extends JpaRepository<Tool, Long> {
             WHERE tt.tag ILIKE :tag
             """)
     List<Tool> findByTag(@Param("tag") String tag);
+
+    @EntityGraph(attributePaths = "tags")
+    Optional<Tool> findById(Long id);
 
     boolean existsByTitleIgnoreCase(String value);
 
