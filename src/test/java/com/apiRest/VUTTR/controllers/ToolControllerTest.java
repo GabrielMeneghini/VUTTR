@@ -215,9 +215,7 @@ class ToolControllerTest {
     @Test
     @DisplayName("Should return status 400 when JSON is empty")
     void deleteToolTagByName_Scenario02() throws Exception {
-        var tool = toolRepository.save(new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
-
-        mockMvc.perform(delete("/tools/" + tool.getId() + "/tags")
+        mockMvc.perform(delete("/tools/1/tags")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("[]"))
                 .andExpect(status().isBadRequest());
@@ -228,6 +226,36 @@ class ToolControllerTest {
         mockMvc.perform(delete("/tools/" + toolRepository.count()+1 + "/tags")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("[\"planning\", \"writing\"]"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should return status 200 when JSON and Tool id are valid")
+    void updateAllToolTags_Scenario01() throws Exception {
+        var tool = toolRepository.save(new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
+
+        mockMvc.perform(put("/tools/" + tool.getId() + "/tags")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("[\"tag1\", \"tag2\", \"tag3\"]"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tags", contains("tag1", "tag2", "tag3")))
+                .andExpect(jsonPath("$.tags", not(hasItems("organization", "planning", "collaboration", "writing", "calendar"))));
+    }
+    @Test
+    @DisplayName("Should return status 400 when JSON is empty")
+    void updateAllToolTags_Scenario02() throws Exception {
+        mockMvc.perform(put("/tools/1/tags")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("[]"))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    @DisplayName("Should return status 404 when Tool id doesn't exist")
+    void updateAllToolTags_Scenario03() throws Exception {
+        mockMvc.perform(put("/tools/1/tags")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("[\"tag1\", \"tag2\", \"tag3\"]"))
                 .andExpect(status().isNotFound());
     }
 
