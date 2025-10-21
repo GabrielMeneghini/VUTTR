@@ -137,4 +137,41 @@ class ToolServiceTest {
         verifyNoMoreInteractions(toolRepository);
     }
 
+    @Test
+    @DisplayName("Should update all tags correctly")
+    void updateAllToolTags_Scenario01() {
+        var allNewTags = Arrays.asList("tag1", "tag2", "tag3");
+        var tool = new Tool(1L, "Notion", "https://notion.so",
+                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
+        when(toolRepository.findById(1L)).thenReturn(Optional.of(tool));
+
+        var response = toolService.updateAllToolTags(1L, allNewTags);
+
+        assertTrue(response.tags().containsAll(allNewTags));
+        assertFalse(response.tags().containsAll(Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
+    }
+    @Test
+    @DisplayName("Should remove all duplicate tags")
+    void updateAllToolTags_Scenario02() {
+        var allNewTags = Arrays.asList("tag1", "tag2", "TAG1", "tag1", "Tag2");
+        var tool = new Tool(1L, "Notion", "https://notion.so",
+                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
+        when(toolRepository.findById(1L)).thenReturn(Optional.of(tool));
+
+        var response = toolService.updateAllToolTags(1L, allNewTags);
+
+        assertFalse(response.tags().containsAll(allNewTags));
+        assertTrue(response.tags().containsAll(Arrays.asList("tag1", "tag2")));
+    }
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException if Tool id doesn't exist")
+    void updateAllToolTags_Scenario03() {
+        var allNewTags = Arrays.asList("tag1", "tag2", "TAG1", "tag1", "Tag2");
+        when(toolRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> toolService.updateAllToolTags(1L, allNewTags));
+    }
+
 }
