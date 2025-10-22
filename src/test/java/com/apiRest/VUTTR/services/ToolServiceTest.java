@@ -138,6 +138,47 @@ class ToolServiceTest {
     }
 
     @Test
+    @DisplayName("Should delete only the matching tags from the tool")
+    void deleteToolTagByName_Scenario01() {
+        var toBeDeletedTags = List.of("json", "schema", "api", "github");
+
+        var tool = new Tool(1L, "Notion", "https://notion.so",
+                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
+
+        when(toolRepository.findById(1L)).thenReturn(Optional.of(tool));
+
+        toolService.deleteToolTagByName(1L, toBeDeletedTags);
+
+        assertFalse(tool.getTags().containsAll(toBeDeletedTags));
+        assertTrue(tool.getTags().containsAll(List.of("node", "rest")));
+    }
+    @Test
+    @DisplayName("Should do nothing when tags to delete don't exist in the tool")
+    void deleteToolTagByName_Scenario02() {
+        var toBeDeletedTags = new ArrayList<>(Arrays.asList("tag1", "tag2", "tag3"));
+        var toolTags = List.of("api", "json", "schema", "node", "github", "rest");
+
+        var tool = new Tool(1L, "Notion", "https://notion.so",
+                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                toolTags);
+
+        when(toolRepository.findById(1L)).thenReturn(Optional.of(tool));
+
+        toolService.deleteToolTagByName(1L, toBeDeletedTags);
+
+        assertTrue(tool.getTags().containsAll(toolTags));
+    }
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when Tool id doesn't exist")
+    void deleteToolTagByName_Scenario03() {
+        when(toolRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () ->
+                toolService.deleteToolTagByName(1L, List.of("api", "json")));
+    }
+
+    @Test
     @DisplayName("Should update all tags correctly")
     void updateAllToolTags_Scenario01() {
         var allNewTags = Arrays.asList("tag1", "tag2", "tag3");
