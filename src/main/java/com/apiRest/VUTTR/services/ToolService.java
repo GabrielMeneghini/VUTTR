@@ -4,6 +4,7 @@ import com.apiRest.VUTTR.dtos.ToolCreateDTO;
 import com.apiRest.VUTTR.dtos.ToolDTO;
 import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
 import com.apiRest.VUTTR.entities.Tool;
+import com.apiRest.VUTTR.exceptions.NoUpdateDetectedException;
 import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
 import com.apiRest.VUTTR.repositories.ToolRepository;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,14 +77,13 @@ public class ToolService {
     public ToolDTO updateTool(ToolUpdateDTO toolUpdateDTO, Long id) {
         Tool tool = validateToolExists(id);
 
-        if(toolUpdateDTO.title() != null && !toolUpdateDTO.title().isBlank()) {
-            tool.setTitle(toolUpdateDTO.title().trim());
-        }
-        if (toolUpdateDTO.link() != null && !toolUpdateDTO.link().isBlank()) {
-            tool.setLink(toolUpdateDTO.link().trim());
-        }
-        if (toolUpdateDTO.description() != null && !toolUpdateDTO.description().isBlank()) {
-            tool.setDescription(toolUpdateDTO.description().trim());
+        // Updates all non-null/non-blank fields and ensures at least one field was modified
+        int countUpdates = 0;
+        countUpdates += updateFieldIfPresent(toolUpdateDTO.title(), tool::setTitle);
+        countUpdates += updateFieldIfPresent(toolUpdateDTO.link(), tool::setLink);
+        countUpdates += updateFieldIfPresent(toolUpdateDTO.description(), tool::setDescription);
+        if(countUpdates==0) {
+            throw new NoUpdateDetectedException("Must update at least one field");
         }
 
         return new ToolDTO(tool);
@@ -108,5 +109,13 @@ public class ToolService {
                 .stream()
                 .map(String::toLowerCase)
                 .collect(Collectors.toCollection(LinkedHashSet::new))));
+    }
+
+    private int updateFieldIfPresent(String value, Consumer<String> setter) {
+        if(value != null && !value.isBlank()) {
+            setter.accept(value.trim());
+            return 1;
+        }
+        return 0;
     }
 }
