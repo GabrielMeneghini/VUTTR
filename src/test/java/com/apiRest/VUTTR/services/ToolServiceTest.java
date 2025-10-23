@@ -2,7 +2,9 @@ package com.apiRest.VUTTR.services;
 
 import com.apiRest.VUTTR.dtos.ToolCreateDTO;
 import com.apiRest.VUTTR.dtos.ToolDTO;
+import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
 import com.apiRest.VUTTR.entities.Tool;
+import com.apiRest.VUTTR.exceptions.NoUpdateDetectedException;
 import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
 import com.apiRest.VUTTR.repositories.ToolRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -176,6 +178,79 @@ class ToolServiceTest {
 
         assertThrows(ResourceNotFoundException.class, () ->
                 toolService.deleteToolTagByName(1L, List.of("api", "json")));
+    }
+
+    @Test
+    @DisplayName("Should not replace null/blank fields")
+    void updateTool_Scenario01() {
+        var toolUpdateDTO = new ToolUpdateDTO(null, null, "new description");
+        var tool = new Tool(1L, "Notion", "https://notion.so",
+                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
+        when(toolRepository.findById(tool.getId())).thenReturn(Optional.of(tool));
+
+        var updatedTool = toolService.updateTool(toolUpdateDTO, tool.getId());
+
+        assertAll(
+            () -> assertEquals("Notion", updatedTool.title()),
+            () -> assertEquals("https://notion.so", updatedTool.link()),
+            () -> assertEquals(toolUpdateDTO.description(), updatedTool.description())
+        );
+        verify(toolRepository).findById(tool.getId());
+        verifyNoMoreInteractions(toolRepository);
+    }
+    @Test
+    @DisplayName("Should throw NoUpdateDetectedException when all fields are BLANK")
+    void updateTool_Scenario02() {
+        var toolUpdateDTO = new ToolUpdateDTO("", "", "");
+        var tool = new Tool(1L, "Notion", "https://notion.so",
+                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
+        when(toolRepository.findById(tool.getId())).thenReturn(Optional.of(tool));
+
+        assertThrows(NoUpdateDetectedException.class, () -> toolService.updateTool(toolUpdateDTO, tool.getId()));
+        assertEquals(tool.getTitle(), "Notion");
+        assertEquals(tool.getLink(), "https://notion.so");
+        assertEquals(tool.getDescription(), "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.");
+    }
+    @Test
+    @DisplayName("Should throw NoUpdateDetectedException when all fields are NULL")
+    void updateTool_Scenario03() {
+        var toolUpdateDTO = new ToolUpdateDTO(null, null, null);
+        var tool = new Tool(1L, "Notion", "https://notion.so",
+                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
+        when(toolRepository.findById(tool.getId())).thenReturn(Optional.of(tool));
+
+        assertThrows(NoUpdateDetectedException.class, () -> toolService.updateTool(toolUpdateDTO, tool.getId()));
+        assertEquals(tool.getTitle(), "Notion");
+        assertEquals(tool.getLink(), "https://notion.so");
+        assertEquals(tool.getDescription(), "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.");
+    }
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when Tool id doesn't exist")
+    void updateTool_Scenario04() {
+        var toolUpdateDTO = new ToolUpdateDTO(null, null, "new description");
+        when(toolRepository.findById(0L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> toolService.updateTool(toolUpdateDTO, 0L));
+    }
+    @Test
+    @DisplayName("Should trim fields before updating")
+    void updateTool_Scenario05() {
+        var toolUpdateDTO = new ToolUpdateDTO("     new Title", "  new  Link    ", "new description    ");
+        var tool = new Tool(1L, "Notion", "https://notion.so",
+                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
+        when(toolRepository.findById(tool.getId())).thenReturn(Optional.of(tool));
+
+        var updatedTool = toolService.updateTool(toolUpdateDTO, tool.getId());
+
+        assertAll(
+            () -> assertEquals("new Title", updatedTool.title()),
+            () -> assertEquals("new  Link", updatedTool.link()),
+            () -> assertEquals("new description", updatedTool.description())
+        );
     }
 
     @Test
