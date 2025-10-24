@@ -26,11 +26,17 @@ public class ToolController {
     @GetMapping
     @Validated
     public ResponseEntity<List<ToolDTO>> findTools(
+            @RequestParam
+            int page,
+
+            @RequestParam
+            int numItems,
+
             @RequestParam(required = false)
             @Size(min = 2, max = 30)
             @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ0-9]+$")
             String tag) {
-        return ResponseEntity.ok(toolService.findTools(tag));
+        return ResponseEntity.ok(toolService.findTools(page, numItems, tag));
     }
 
     @PostMapping

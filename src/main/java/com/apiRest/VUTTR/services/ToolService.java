@@ -9,6 +9,7 @@ import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
 import com.apiRest.VUTTR.repositories.ToolRepository;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +24,11 @@ public class ToolService {
     private ToolRepository toolRepository;
 
     @Transactional(readOnly = true)
-    public List<ToolDTO> findTools(String tag) {
+    public List<ToolDTO> findTools(int page, int numItems, String tag) {
         if(tag==null || tag.isBlank()) {
-            return toolRepository.findAll().stream().map(ToolDTO::new).toList();
+            return toolRepository.findAll(PageRequest.of(page, numItems)).stream().map(ToolDTO::new).toList();
         } else {
-            return toolRepository.findByTag(tag).stream().map(ToolDTO::new).toList();
+            return toolRepository.findByTag(PageRequest.of(page, numItems), tag).stream().map(ToolDTO::new).toList();
         }
     }
 

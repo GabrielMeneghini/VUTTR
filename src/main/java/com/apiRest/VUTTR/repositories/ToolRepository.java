@@ -1,6 +1,7 @@
 package com.apiRest.VUTTR.repositories;
 
 import com.apiRest.VUTTR.entities.Tool;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,7 +21,7 @@ public interface ToolRepository extends JpaRepository<Tool, Long> {
                 ON t.id = tt.tool_id
             WHERE tt.tag ILIKE :tag
             """)
-    List<Tool> findByTag(@Param("tag") String tag);
+    List<Tool> findByTag(Pageable pageable, @Param("tag") String tag);
 
     @EntityGraph(attributePaths = "tags")
     Optional<Tool> findById(Long id);
