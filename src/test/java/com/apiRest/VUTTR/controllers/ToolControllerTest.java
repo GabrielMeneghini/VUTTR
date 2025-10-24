@@ -43,7 +43,7 @@ class ToolControllerTest {
     @Test
     @DisplayName("Should return an empty list when there's no Tool in the database")
     void findTools_findAll_Scenario01() throws Exception {
-        mockMvc.perform(get("/tools"))
+        mockMvc.perform(get("/tools?page=0&numItems=10"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]")
         );
@@ -53,7 +53,7 @@ class ToolControllerTest {
     void findTools_findAll_Scenario02() throws Exception {
         createTools();
 
-        mockMvc.perform(get("/tools"))
+        mockMvc.perform(get("/tools?page=0&numItems=10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[*].title", containsInAnyOrder("Notion", "json-server", "fastify"))
@@ -65,7 +65,7 @@ class ToolControllerTest {
     void findTools_findByTag_Scenario01() throws Exception {
         createTools();
 
-        mockMvc.perform(get("/tools?tag=nonexistentTag"))
+        mockMvc.perform(get("/tools?page=0&numItems=10&tag=nonexistentTag"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]")
         );
@@ -75,7 +75,7 @@ class ToolControllerTest {
     void findTools_findByTag_Scenario02() throws Exception {
         createTools();
 
-        mockMvc.perform(get("/tools?tag=node"))
+        mockMvc.perform(get("/tools?page=0&numItems=10&tag=node"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[*].title", containsInAnyOrder("json-server", "fastify"))

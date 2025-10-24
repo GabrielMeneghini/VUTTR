@@ -13,6 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,19 +39,21 @@ class ToolServiceTest {
     @DisplayName("Should return all tools when tag is null")
     void findTools_findAll_Scenario01() {
         // Arrange
+        PageRequest pageable = PageRequest.of(0, 10);
         List<Tool> tools = List.of(
                 new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")),
                 new Tool(null, "json-server", "https://github.com/typicode/json-server", "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.", Arrays.asList("api", "json", "schema", "node", "github", "rest")),
                 new Tool(null, "fastify", "https://www.fastify.io/", "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.", Arrays.asList("web", "framework", "node", "http2", "https", "localhost"))
         );
-        when(toolRepository.findAll()).thenReturn(tools);
+        Page<Tool> pageTools = new PageImpl<>(tools, pageable, tools.size());
+        when(toolRepository.findAll(pageable)).thenReturn(pageTools);
 
         // Act
-        var result = toolService.findTools(null);
+        var result = toolService.findTools(0, 10, null);
 
         // Assert
-        verify(toolRepository).findAll();
-        verify(toolRepository, never()).findByTag(anyString());
+        verify(toolRepository).findAll(pageable);
+        verify(toolRepository, never()).findByTag(any(Pageable.class),anyString());
         result.forEach(dto -> assertInstanceOf(ToolDTO.class, dto));
         assertEquals(3, result.size());
         assertEquals("json-server", result.get(1).title());
@@ -56,18 +62,19 @@ class ToolServiceTest {
     @DisplayName("Should return only attaching results when tag is specified")
     void findTools_findByTag_Scenario01() {
         // Arrange
+        PageRequest pageable = PageRequest.of(0, 10);
         List<Tool> tools = List.of(
                 new Tool(null, "json-server", "https://github.com/typicode/json-server", "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.", Arrays.asList("api", "json", "schema", "node", "github", "rest")),
                 new Tool(null, "fastify", "https://www.fastify.io/", "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.", Arrays.asList("web", "framework", "node", "http2", "https", "localhost"))
         );
         var tag = "node";
-        when(toolRepository.findByTag(tag)).thenReturn(tools);
+        when(toolRepository.findByTag(pageable, tag)).thenReturn(tools);
 
         // Act
-        var result = toolService.findTools(tag);
+        var result = toolService.findTools(0, 10, tag);
 
         // Assert
-        verify(toolRepository).findByTag(tag);
+        verify(toolRepository).findByTag(pageable, tag);
         verify(toolRepository, never()).findAll();
         result.forEach(dto -> assertInstanceOf(ToolDTO.class, dto));
         assertEquals(2, result.size());
