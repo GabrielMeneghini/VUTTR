@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -30,6 +31,10 @@ public class ToolService {
         } else {
             return toolRepository.findByTag(PageRequest.of(page, numItems), tag).stream().map(ToolDTO::new).toList();
         }
+    }
+
+    public ToolDTO findToolById(Long id) {
+        return new ToolDTO(validateToolExists(id));
     }
 
     @Transactional

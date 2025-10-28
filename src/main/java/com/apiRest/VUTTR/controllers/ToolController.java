@@ -9,12 +9,14 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.util.List;
 
 @RestController
@@ -40,6 +42,11 @@ public class ToolController {
             @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ0-9]+$")
             String tag) {
         return ResponseEntity.ok(toolService.findTools(page, numItems, tag));
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<ToolDTO> findToolById(@PathVariable Long id) {
+        return ResponseEntity.ok(toolService.findToolById(id));
     }
 
     @PostMapping
