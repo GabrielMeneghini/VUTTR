@@ -59,6 +59,46 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$[*].title", containsInAnyOrder("Notion", "json-server", "fastify"))
         );
     }
+    @Test
+    @DisplayName("Should return specified pagination page")
+    void findTools_findAll_Scenario03() throws Exception {
+        createTools();
+
+        var page = 1;
+        var numItems = 2;
+        mockMvc.perform(get("/tools?page=" + page + "&numItems=" + numItems))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("fastify"))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*]", not(containsInAnyOrder("Notion", "json-server"))));
+    }
+    @Test
+    @DisplayName("Should return specified number of items in pagination page")
+    void findTools_findAll_Scenario04() throws Exception {
+        createTools();
+        var page = 0;
+        var numItems = 3;
+        mockMvc.perform(get("/tools?page=" + page + "&numItems=" + numItems))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[*].title", contains("Notion", "json-server", "fastify")));
+    }
+    @Test
+    @DisplayName("Should return 400 Bad Request when \"page\" number less than 0")
+    void findTools_findAll_Scenario05() throws Exception {
+        var page = -4;
+        var numItems = 3;
+        mockMvc.perform(get("/tools?page=" + page + "&numItems=" + numItems))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    @DisplayName("Should return 400 Bad Request when \"numItems\" number less than 1")
+    void findTools_findAll_Scenario06() throws Exception {
+        var page = 1;
+        var numItems = 0;
+        mockMvc.perform(get("/tools?page=" + page + "&numItems=" + numItems))
+                .andExpect(status().isBadRequest());
+    }
 
     @Test
     @DisplayName("Should return an empty list when there's no Tool in the database with the specified tag")
@@ -87,6 +127,36 @@ class ToolControllerTest {
     void findTools_findByTag_Scenario03_InvalidTags(String tag) throws Exception {
         mockMvc.perform(get("/tools?tag=" + tag))
                 .andExpect(status().isBadRequest());
+    }
+    @Test
+    @DisplayName("Should return specified pagination page when searching by tag")
+    void findTools_findByTag_Scenario04() throws Exception {
+        createTools();
+        createTools();
+
+        var page = 1;
+        var numItems = 2;
+        var tag = "node";
+        mockMvc.perform(get("/tools?page=" + page + "&numItems=" + numItems + "&tag=" + tag))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[*].title", contains("json-server", "fastify"))
+        );
+    }
+    @Test
+    @DisplayName("Should return specified number of items in pagination page when searching by tag")
+    void findTools_findByTag_Scenario05() throws Exception {
+        createTools();
+        createTools();
+
+        var page = 0;
+        var numItems = 3;
+        var tag = "node";
+        mockMvc.perform(get("/tools?page=" + page + "&numItems=" + numItems + "&tag=" + tag))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[*].title", contains("json-server", "fastify", "json-server"))
+        );
     }
 
     @Test
