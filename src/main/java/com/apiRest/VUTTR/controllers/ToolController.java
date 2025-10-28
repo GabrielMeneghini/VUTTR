@@ -5,6 +5,7 @@ import com.apiRest.VUTTR.dtos.ToolDTO;
 import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
 import com.apiRest.VUTTR.services.ToolService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -27,9 +28,11 @@ public class ToolController {
     @Validated
     public ResponseEntity<List<ToolDTO>> findTools(
             @RequestParam
+            @Min(0)
             int page,
 
             @RequestParam
+            @Min(1)
             int numItems,
 
             @RequestParam(required = false)
