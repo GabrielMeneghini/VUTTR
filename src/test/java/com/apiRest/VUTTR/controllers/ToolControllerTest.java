@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -157,6 +158,23 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[*].title", contains("json-server", "fastify", "json-server"))
         );
+    }
+
+    @Test
+    @DisplayName("Should return Tool of correct id")
+    void findToolById_Scenario01() throws Exception {
+        var toolList = createTools();
+        var toolToBeFound = toolList.get(2);
+
+        mockMvc.perform(get("/tools/" + toolToBeFound.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(toolToBeFound.getTitle()));
+    }
+    @Test
+    @DisplayName("Should return status 404 Not Found when Tool id doesn't exist")
+    void findToolById_Scenario02() throws Exception {
+        mockMvc.perform(get("/tools/0"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -437,10 +455,10 @@ class ToolControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    private void createTools() {
+    private List<Tool> createTools() {
         Tool tool1 = new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
         Tool tool2 = new Tool(null, "json-server", "https://github.com/typicode/json-server", "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.", Arrays.asList("api", "json", "schema", "node", "github", "rest"));
         Tool tool3 = new Tool(null, "fastify", "https://www.fastify.io/", "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.", Arrays.asList("web", "framework", "node", "http2", "https", "localhost"));
-        toolRepository.saveAll(Arrays.asList(tool1, tool2, tool3));
+        return toolRepository.saveAll(Arrays.asList(tool1, tool2, tool3));
     }
 }
