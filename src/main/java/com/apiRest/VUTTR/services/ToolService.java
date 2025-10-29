@@ -33,6 +33,7 @@ public class ToolService {
         }
     }
 
+    @Transactional(readOnly = true)
     public ToolDTO findToolById(Long id) {
         return new ToolDTO(validateToolExists(id));
     }

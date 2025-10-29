@@ -2,6 +2,8 @@ package com.apiRest.VUTTR.controllers;
 
 import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.repositories.ToolRepository;
+import com.jayway.jsonpath.JsonPath;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,8 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -225,6 +226,29 @@ class ToolControllerTest {
                             }
                             """))
                 .andExpect(status().isBadRequest());
+    }
+    @Test
+    @DisplayName("Should return URI in Location Header")
+    void addTool_Scenario04() throws Exception {
+        var response = mockMvc.perform(post("/tools")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                                "title": "Duolingo",
+                                "link": "https://www.duolingo.com/",
+                                "description": "A popular language learning platform offering gamified lessons, exercises, and practice in dozens of languages.",
+                                "tags": ["language", "learning", "education", "gamified", "mobile", "web", "courses"]
+                            }
+                            """))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse();
+
+        var headerLocation = response.getHeader("Location");
+        var returnedId = JsonPath.read(response.getContentAsString(), "$.id");
+        assertNotNull(headerLocation,
+                "Location header should not be null");
+        assertTrue(headerLocation.endsWith("/tools/" + returnedId),
+                "Location header should end with /tools/" + returnedId);
     }
 
     @Test
