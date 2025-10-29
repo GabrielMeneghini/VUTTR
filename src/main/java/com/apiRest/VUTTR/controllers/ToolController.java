@@ -15,7 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.net.http.HttpResponse;
 import java.util.List;
 
@@ -50,8 +52,14 @@ public class ToolController {
     }
 
     @PostMapping
-    public ResponseEntity<ToolDTO> addTool(@Valid @RequestBody ToolCreateDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(toolService.addTool(dto));
+    public ResponseEntity<ToolDTO> addTool(@Valid @RequestBody ToolCreateDTO dto, UriComponentsBuilder uriComponentsBuilder) {
+        var createdToolDto = toolService.addTool(dto);
+
+        URI uri = uriComponentsBuilder.path("/tools/{id}")
+                .buildAndExpand(createdToolDto.id())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(createdToolDto);
     }
 
     @PostMapping("/{id}")
