@@ -62,31 +62,15 @@ public class ToolController {
         return ResponseEntity.created(uri).body(createdToolDto);
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<ToolDTO> addTagsInTool(@RequestBody @NotEmpty List<String> newTags, @PathVariable Long id) {
-        return ResponseEntity.ok(toolService.addTagsInTool(newTags, id));
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteToolById(@PathVariable Long id) {
         toolService.deleteToolById(id);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{toolId}/tags")
-    public ResponseEntity<Void> deleteToolTagByName(@PathVariable Long toolId, @RequestBody @NotEmpty List<String> toBeDeletedTags) {
-        toolService.deleteToolTagByName(toolId, toBeDeletedTags);
-        return ResponseEntity.noContent().build();
-    }
-
     @PatchMapping("/{id}")
     public ResponseEntity<ToolDTO> updateTool(@RequestBody @Valid ToolUpdateDTO toolUpdateDTO, @PathVariable Long id) {
         return ResponseEntity.ok(toolService.updateTool(toolUpdateDTO, id));
-    }
-
-    @PutMapping("/{toolId}/tags")
-    public ResponseEntity<ToolDTO> updateAllToolTags(@PathVariable Long toolId, @RequestBody @NotEmpty List<String> allNewTags) {
-        return ResponseEntity.ok().body(toolService.updateAllToolTags(toolId, allNewTags));
     }
 
 }
