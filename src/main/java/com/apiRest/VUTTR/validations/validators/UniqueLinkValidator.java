@@ -12,11 +12,11 @@ public class UniqueLinkValidator implements ConstraintValidator<UniqueLink, Stri
     private ToolRepository toolRepository;
 
     @Override
-    public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        if(s == null || s.isBlank()) {
+    public boolean isValid(String link, ConstraintValidatorContext constraintValidatorContext) {
+        if(link == null || link.isBlank()) {
             return true;
         }
-        return !toolRepository.existsByLink(s);
+        return !toolRepository.existsByLink(link);
     }
 
 }

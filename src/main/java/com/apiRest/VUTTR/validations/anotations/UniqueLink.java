@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UniqueLink {
 
-    String message() default "Link already exists";
+    String message() default "already exists";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

@@ -12,11 +12,11 @@ public class UniqueTitleValidator implements ConstraintValidator<UniqueTitle, St
     private ToolRepository toolRepository;
 
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        if (value == null || value.isBlank()) {
+    public boolean isValid(String title, ConstraintValidatorContext constraintValidatorContext) {
+        if (title == null || title.isBlank()) {
             return true;
         }
-        return !toolRepository.existsByTitleIgnoreCase(value);
+        return !toolRepository.existsByTitleIgnoreCase(title);
     }
 
 }
