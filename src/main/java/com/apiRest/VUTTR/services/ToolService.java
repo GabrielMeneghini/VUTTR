@@ -5,24 +5,26 @@ import com.apiRest.VUTTR.dtos.ToolDTO;
 import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
 import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.exceptions.NoUpdateDetectedException;
-import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
+import com.apiRest.VUTTR.helpers.ToolHelper;
 import com.apiRest.VUTTR.repositories.ToolRepository;
-import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.http.HttpResponse;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.List;
+
+import static com.apiRest.VUTTR.helpers.ToolHelper.removeDuplicateTags;
+import static com.apiRest.VUTTR.helpers.ToolHelper.updateFieldIfPresent;
 
 @Service
 public class ToolService {
 
     @Autowired
     private ToolRepository toolRepository;
+
+    @Autowired
+    private ToolHelper toolHelper;
 
     @Transactional(readOnly = true)
     public List<ToolDTO> findTools(int page, int numItems, String tag) {
@@ -35,7 +37,7 @@ public class ToolService {
 
     @Transactional(readOnly = true)
     public ToolDTO findToolById(Long id) {
-        return new ToolDTO(validateToolExists(id));
+        return new ToolDTO(toolHelper.validateToolExists(id));
     }
 
     @Transactional
@@ -47,42 +49,15 @@ public class ToolService {
     }
 
     @Transactional
-    public ToolDTO addTagsInTool(List<String> newTags, Long id) {
-        Tool tool = validateToolExists(id);
-
-        tool.getTags().addAll(newTags);
-        removeDuplicateTags(tool);
-
-        return new ToolDTO(tool);
-    }
-
-    @Transactional
     public void deleteToolById(Long id) {
-        Tool tool = validateToolExists(id);
+        Tool tool = toolHelper.validateToolExists(id);
 
         toolRepository.deleteById(tool.getId());
     }
 
     @Transactional
-    public void deleteToolTagByName(Long toolId, @NotEmpty List<String> toBeDeletedTags) {
-        var tool = validateToolExists(toolId);
-
-        var lowerCaseTags = toBeDeletedTags.stream().map(String::toLowerCase).toList();
-
-        // Iterates over lowerCaseTags and removes matching tags from the tool's tag list
-        for(int x=0; x<lowerCaseTags.size(); x++) {
-            for(int y=0; y<tool.getTags().size(); y++) {
-                if(lowerCaseTags.get(x).equals(tool.getTags().get(y))) {
-                    tool.getTags().remove(y);
-                    break;
-                }
-            }
-        }
-    }
-
-    @Transactional
     public ToolDTO updateTool(ToolUpdateDTO toolUpdateDTO, Long id) {
-        Tool tool = validateToolExists(id);
+        Tool tool = toolHelper.validateToolExists(id);
 
         // Updates all non-null/non-blank fields and ensures at least one field was modified
         int countUpdates = 0;
@@ -96,33 +71,4 @@ public class ToolService {
         return new ToolDTO(tool);
     }
 
-    @Transactional
-    public ToolDTO updateAllToolTags(Long toolId, List<String> allNewTags) {
-        var tool = validateToolExists(toolId);
-
-        tool.setTags(allNewTags);
-        removeDuplicateTags(tool);
-
-        return new ToolDTO(tool);
-    }
-
-    private Tool validateToolExists(Long id) {
-        return toolRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("No tool was found for id " + id + "."));
-    }
-
-    private void removeDuplicateTags(Tool tool) {
-        tool.setTags(new ArrayList<>(tool.getTags()
-                .stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toCollection(LinkedHashSet::new))));
-    }
-
-    private int updateFieldIfPresent(String value, Consumer<String> setter) {
-        if(value != null && !value.isBlank()) {
-            setter.accept(value.trim());
-            return 1;
-        }
-        return 0;
-    }
 }
