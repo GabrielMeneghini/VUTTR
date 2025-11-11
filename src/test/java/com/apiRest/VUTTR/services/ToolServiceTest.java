@@ -6,6 +6,7 @@ import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
 import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.exceptions.NoUpdateDetectedException;
 import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
+import com.apiRest.VUTTR.helpers.ToolHelper;
 import com.apiRest.VUTTR.repositories.ToolRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,9 @@ class ToolServiceTest {
 
     @Mock
     private ToolRepository toolRepository;
+
+    @Mock
+    private ToolHelper toolHelper;
 
     @Test
     @DisplayName("Should return all tools when tag is null")
@@ -75,7 +79,7 @@ class ToolServiceTest {
 
         // Assert
         verify(toolRepository).findByTag(pageable, tag);
-        verify(toolRepository, never()).findAll();
+        verify(toolRepository, never()).findAll(any(Pageable.class));
         result.forEach(dto -> assertInstanceOf(ToolDTO.class, dto));
         assertEquals(2, result.size());
         assertEquals("fastify", result.get(1).title());
@@ -103,88 +107,23 @@ class ToolServiceTest {
     }
 
     @Test
-    @DisplayName("Should save all the new tags without duplicates")
-    void addTagsInTool_Scenario01() {
-        List<String> newTags = new ArrayList<>(Arrays.asList("api", "newTag", "Github", "NEWTAG", "NEWtAG2"));
-        var tool = new Tool(0L, "json-server", "https://github.com/typicode/json-server"
-                , "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges."
-                , new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
-        when(toolRepository.findById(tool.getId())).thenReturn(Optional.of(tool));
-
-        toolService.addTagsInTool(newTags, tool.getId());
-
-        assertEquals(8, tool.getTags().size());
-        assertTrue(tool.getTags().containsAll(List.of("api", "json", "schema", "node", "github", "rest", "newtag", "newtag2")));
-    }
-    @Test
-    @DisplayName("Should throw ResourceNotFoundException if Tool id doesn't exist")
-    void addTagsInTool_Scenario02() {
-        when(toolRepository.findById(0L)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> toolService.addTagsInTool(List.of("newTag"), 0L));
-        verifyNoMoreInteractions(toolRepository);
-    }
-
-    @Test
     @DisplayName("Should throw ResourceNotFoundException if Tool id doesn't exist")
     void deleteToolById_Scenario01() {
-        when(toolRepository.findById(0L)).thenReturn(Optional.empty());
+        var id = 0L;
+        when(toolHelper.validateToolExists(id)).thenThrow(new ResourceNotFoundException("No tool was found for id " + id + "."));
 
-        assertThrows(ResourceNotFoundException.class, () -> toolService.deleteToolById(0L));
+        assertThrows(ResourceNotFoundException.class, () -> toolService.deleteToolById(id));
         verify(toolRepository, never()).deleteById(any());
-        verifyNoMoreInteractions(toolRepository);
     }
     @Test
     @DisplayName("Should delete Tool if id exists")
     void deleteToolById_Scenario02() {
         var tool = new Tool(0L, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
-        when(toolRepository.findById(0L)).thenReturn(Optional.of(tool));
+        when(toolHelper.validateToolExists(tool.getId())).thenReturn(tool);
 
         toolService.deleteToolById(0L);
 
         verify(toolRepository).deleteById(tool.getId());
-        verifyNoMoreInteractions(toolRepository);
-    }
-
-    @Test
-    @DisplayName("Should delete only the matching tags from the tool")
-    void deleteToolTagByName_Scenario01() {
-        var toBeDeletedTags = List.of("json", "schema", "api", "github");
-
-        var tool = new Tool(1L, "Notion", "https://notion.so",
-                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
-                new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
-
-        when(toolRepository.findById(1L)).thenReturn(Optional.of(tool));
-
-        toolService.deleteToolTagByName(1L, toBeDeletedTags);
-
-        assertFalse(tool.getTags().containsAll(toBeDeletedTags));
-        assertTrue(tool.getTags().containsAll(List.of("node", "rest")));
-    }
-    @Test
-    @DisplayName("Should do nothing when tags to delete don't exist in the tool")
-    void deleteToolTagByName_Scenario02() {
-        var toBeDeletedTags = new ArrayList<>(Arrays.asList("tag1", "tag2", "tag3"));
-        var toolTags = List.of("api", "json", "schema", "node", "github", "rest");
-
-        var tool = new Tool(1L, "Notion", "https://notion.so",
-                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
-                toolTags);
-
-        when(toolRepository.findById(1L)).thenReturn(Optional.of(tool));
-
-        toolService.deleteToolTagByName(1L, toBeDeletedTags);
-
-        assertTrue(tool.getTags().containsAll(toolTags));
-    }
-    @Test
-    @DisplayName("Should throw ResourceNotFoundException when Tool id doesn't exist")
-    void deleteToolTagByName_Scenario03() {
-        when(toolRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () ->
-                toolService.deleteToolTagByName(1L, List.of("api", "json")));
     }
 
     @Test
@@ -194,7 +133,7 @@ class ToolServiceTest {
         var tool = new Tool(1L, "Notion", "https://notion.so",
                 "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
                 new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
-        when(toolRepository.findById(tool.getId())).thenReturn(Optional.of(tool));
+        when(toolHelper.validateToolExists(tool.getId())).thenReturn(tool);
 
         var updatedTool = toolService.updateTool(toolUpdateDTO, tool.getId());
 
@@ -203,8 +142,7 @@ class ToolServiceTest {
             () -> assertEquals("https://notion.so", updatedTool.link()),
             () -> assertEquals(toolUpdateDTO.description(), updatedTool.description())
         );
-        verify(toolRepository).findById(tool.getId());
-        verifyNoMoreInteractions(toolRepository);
+        verify(toolHelper).validateToolExists(tool.getId());
     }
     @Test
     @DisplayName("Should throw NoUpdateDetectedException when all fields are BLANK")
@@ -213,7 +151,7 @@ class ToolServiceTest {
         var tool = new Tool(1L, "Notion", "https://notion.so",
                 "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
                 new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
-        when(toolRepository.findById(tool.getId())).thenReturn(Optional.of(tool));
+        when(toolHelper.validateToolExists(tool.getId())).thenReturn(tool);
 
         assertThrows(NoUpdateDetectedException.class, () -> toolService.updateTool(toolUpdateDTO, tool.getId()));
         assertEquals(tool.getTitle(), "Notion");
@@ -227,7 +165,7 @@ class ToolServiceTest {
         var tool = new Tool(1L, "Notion", "https://notion.so",
                 "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
                 new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
-        when(toolRepository.findById(tool.getId())).thenReturn(Optional.of(tool));
+        when(toolHelper.validateToolExists(tool.getId())).thenReturn(tool);
 
         assertThrows(NoUpdateDetectedException.class, () -> toolService.updateTool(toolUpdateDTO, tool.getId()));
         assertEquals(tool.getTitle(), "Notion");
@@ -238,9 +176,11 @@ class ToolServiceTest {
     @DisplayName("Should throw ResourceNotFoundException when Tool id doesn't exist")
     void updateTool_Scenario04() {
         var toolUpdateDTO = new ToolUpdateDTO(null, null, "new description");
-        when(toolRepository.findById(0L)).thenReturn(Optional.empty());
+        var id = 0L;
+        when(toolHelper.validateToolExists(id)).thenThrow(new ResourceNotFoundException("No tool was found for id " + id + "."));
 
-        assertThrows(ResourceNotFoundException.class, () -> toolService.updateTool(toolUpdateDTO, 0L));
+
+        assertThrows(ResourceNotFoundException.class, () -> toolService.updateTool(toolUpdateDTO, id));
     }
     @Test
     @DisplayName("Should trim fields before updating")
@@ -249,7 +189,7 @@ class ToolServiceTest {
         var tool = new Tool(1L, "Notion", "https://notion.so",
                 "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
                 new ArrayList<>(Arrays.asList("api", "json", "schema", "node", "github", "rest")));
-        when(toolRepository.findById(tool.getId())).thenReturn(Optional.of(tool));
+        when(toolHelper.validateToolExists(tool.getId())).thenReturn(tool);
 
         var updatedTool = toolService.updateTool(toolUpdateDTO, tool.getId());
 
@@ -258,43 +198,6 @@ class ToolServiceTest {
             () -> assertEquals("new  Link", updatedTool.link()),
             () -> assertEquals("new description", updatedTool.description())
         );
-    }
-
-    @Test
-    @DisplayName("Should update all tags correctly")
-    void updateAllToolTags_Scenario01() {
-        var allNewTags = Arrays.asList("tag1", "tag2", "tag3");
-        var tool = new Tool(1L, "Notion", "https://notion.so",
-                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
-                Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
-        when(toolRepository.findById(1L)).thenReturn(Optional.of(tool));
-
-        var response = toolService.updateAllToolTags(1L, allNewTags);
-
-        assertTrue(response.tags().containsAll(allNewTags));
-        assertFalse(response.tags().containsAll(Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
-    }
-    @Test
-    @DisplayName("Should remove all duplicate tags")
-    void updateAllToolTags_Scenario02() {
-        var allNewTags = Arrays.asList("tag1", "tag2", "TAG1", "tag1", "Tag2");
-        var tool = new Tool(1L, "Notion", "https://notion.so",
-                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
-                Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
-        when(toolRepository.findById(1L)).thenReturn(Optional.of(tool));
-
-        var response = toolService.updateAllToolTags(1L, allNewTags);
-
-        assertFalse(response.tags().containsAll(allNewTags));
-        assertTrue(response.tags().containsAll(Arrays.asList("tag1", "tag2")));
-    }
-    @Test
-    @DisplayName("Should throw ResourceNotFoundException if Tool id doesn't exist")
-    void updateAllToolTags_Scenario03() {
-        var allNewTags = Arrays.asList("tag1", "tag2", "TAG1", "tag1", "Tag2");
-        when(toolRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> toolService.updateAllToolTags(1L, allNewTags));
     }
 
 }
