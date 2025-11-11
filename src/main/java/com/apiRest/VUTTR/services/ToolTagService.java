@@ -23,10 +23,10 @@ public class ToolTagService {
     private ToolHelper toolHelper;
 
     @Transactional
-    public ToolDTO updateAllToolTags(Long toolId, List<String> allNewTags) {
-        var tool = toolHelper.validateToolExists(toolId);
+    public ToolDTO addTagsInTool(List<String> newTags, Long id) {
+        Tool tool = toolHelper.validateToolExists(id);
 
-        tool.setTags(allNewTags);
+        tool.getTags().addAll(newTags);
         removeDuplicateTags(tool);
 
         return new ToolDTO(tool);
@@ -50,12 +50,13 @@ public class ToolTagService {
     }
 
     @Transactional
-    public ToolDTO addTagsInTool(List<String> newTags, Long id) {
-        Tool tool = toolHelper.validateToolExists(id);
+    public ToolDTO updateAllToolTags(Long toolId, List<String> allNewTags) {
+        var tool = toolHelper.validateToolExists(toolId);
 
-        tool.getTags().addAll(newTags);
+        tool.setTags(allNewTags);
         removeDuplicateTags(tool);
 
         return new ToolDTO(tool);
     }
+
 }

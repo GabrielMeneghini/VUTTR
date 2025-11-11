@@ -15,11 +15,9 @@ public class ToolHelper {
 
     private final ToolRepository toolRepository;
 
-
     public ToolHelper(ToolRepository toolRepository) {
         this.toolRepository = toolRepository;
     }
-
 
     public Tool validateToolExists(Long id) {
         return toolRepository.findById(id).orElseThrow(

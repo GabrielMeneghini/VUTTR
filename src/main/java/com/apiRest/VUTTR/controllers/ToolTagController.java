@@ -16,15 +16,15 @@ public class ToolTagController {
     @Autowired
     private ToolTagService toolTagService;
 
+    @PostMapping("/{id}/tags")
+    public ResponseEntity<ToolDTO> addTagsInTool(@RequestBody @NotEmpty List<String> newTags, @PathVariable Long id) {
+        return ResponseEntity.ok(toolTagService.addTagsInTool(newTags, id));
+    }
+
     @DeleteMapping("/{toolId}/tags")
     public ResponseEntity<Void> deleteToolTagByName(@PathVariable Long toolId, @RequestBody @NotEmpty List<String> toBeDeletedTags) {
         toolTagService.deleteToolTagByName(toolId, toBeDeletedTags);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{id}")
-    public ResponseEntity<ToolDTO> addTagsInTool(@RequestBody @NotEmpty List<String> newTags, @PathVariable Long id) {
-        return ResponseEntity.ok(toolTagService.addTagsInTool(newTags, id));
     }
 
     @PutMapping("/{toolId}/tags")
