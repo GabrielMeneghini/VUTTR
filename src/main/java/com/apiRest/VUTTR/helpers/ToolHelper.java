@@ -24,9 +24,10 @@ public class ToolHelper {
                 () -> new ResourceNotFoundException("No tool was found for id " + id + "."));
     }
 
-    public static void removeDuplicateTags(Tool tool) {
+    public static void removeDuplicateAndBlankTags(Tool tool) {
         tool.setTags(new ArrayList<>(tool.getTags()
                 .stream()
+                .filter(tag -> tag!=null && !tag.isBlank())
                 .map(String::toLowerCase)
                 .collect(Collectors.toCollection(LinkedHashSet::new))));
     }

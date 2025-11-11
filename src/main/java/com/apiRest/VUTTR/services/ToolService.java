@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.apiRest.VUTTR.helpers.ToolHelper.removeDuplicateTags;
+import static com.apiRest.VUTTR.helpers.ToolHelper.removeDuplicateAndBlankTags;
 import static com.apiRest.VUTTR.helpers.ToolHelper.updateFieldIfPresent;
 
 @Service
@@ -43,7 +43,7 @@ public class ToolService {
     @Transactional
     public ToolDTO addTool(ToolCreateDTO dto) {
         var tool = new Tool(dto);
-        removeDuplicateTags(tool);
+        removeDuplicateAndBlankTags(tool);
 
         return new ToolDTO(toolRepository.save(tool));
     }

@@ -28,8 +28,8 @@ public class ToolTagController {
     }
 
     @PutMapping("/{toolId}/tags")
-    public ResponseEntity<ToolDTO> updateAllToolTags(@PathVariable Long toolId, @RequestBody @NotEmpty List<String> allNewTags) {
-        return ResponseEntity.ok().body(toolTagService.updateAllToolTags(toolId, allNewTags));
+    public ResponseEntity<ToolDTO> updateAllToolTags(@PathVariable Long toolId, @RequestBody @NotEmpty List<String> newTags) {
+        return ResponseEntity.ok().body(toolTagService.updateAllToolTags(toolId, newTags));
     }
 
 }

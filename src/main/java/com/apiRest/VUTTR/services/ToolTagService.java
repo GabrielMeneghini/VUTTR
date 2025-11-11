@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.apiRest.VUTTR.helpers.ToolHelper.removeDuplicateTags;
+import static com.apiRest.VUTTR.helpers.ToolHelper.removeDuplicateAndBlankTags;
 
 @Service
 public class ToolTagService {
@@ -27,7 +27,7 @@ public class ToolTagService {
         Tool tool = toolHelper.validateToolExists(id);
 
         tool.getTags().addAll(newTags);
-        removeDuplicateTags(tool);
+        removeDuplicateAndBlankTags(tool);
 
         return new ToolDTO(tool);
     }
@@ -50,11 +50,11 @@ public class ToolTagService {
     }
 
     @Transactional
-    public ToolDTO updateAllToolTags(Long toolId, List<String> allNewTags) {
+    public ToolDTO updateAllToolTags(Long toolId, List<String> newTags) {
         var tool = toolHelper.validateToolExists(toolId);
 
-        tool.setTags(allNewTags);
-        removeDuplicateTags(tool);
+        tool.setTags(newTags);
+        removeDuplicateAndBlankTags(tool);
 
         return new ToolDTO(tool);
     }
