@@ -28,7 +28,7 @@ public class ToolHelper {
         tool.setTags(new ArrayList<>(tool.getTags()
                 .stream()
                 .filter(tag -> tag!=null && !tag.isBlank())
-                .map(String::toLowerCase)
+                .map(tag -> tag.toLowerCase().trim())
                 .collect(Collectors.toCollection(LinkedHashSet::new))));
     }
 

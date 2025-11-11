@@ -104,9 +104,9 @@ public class ToolTagServiceTest {
         assertFalse(response.tags().containsAll(Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
     }
     @Test
-    @DisplayName("Should remove all duplicate tags")
+    @DisplayName("Should remove all duplicate, blank and null tags")
     void updateAllToolTags_Scenario02() {
-        var allNewTags = Arrays.asList("tag1", "tag2", "TAG1", "tag1", "Tag2");
+        var allNewTags = Arrays.asList(" tag1", "tag2 ", "TAG1", "tag1", "Tag2", "", null);
         var tool = new Tool(1L, "Notion", "https://notion.so",
                 "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
                 Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
