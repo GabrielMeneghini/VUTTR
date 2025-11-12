@@ -3,6 +3,7 @@ package com.apiRest.VUTTR.controllers;
 import com.apiRest.VUTTR.dtos.ToolDTO;
 import com.apiRest.VUTTR.services.ToolTagService;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tools")
+@RequiredArgsConstructor
 public class ToolTagController {
 
-    @Autowired
-    private ToolTagService toolTagService;
+    private final ToolTagService toolTagService;
 
     @PostMapping("/{id}/tags")
     public ResponseEntity<ToolDTO> addTagsInTool(@RequestBody @NotEmpty List<String> newTags, @PathVariable Long id) {

@@ -5,6 +5,7 @@ import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.helpers.ToolHelper;
 import com.apiRest.VUTTR.repositories.ToolRepository;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,13 +15,10 @@ import java.util.List;
 import static com.apiRest.VUTTR.helpers.ToolHelper.removeDuplicateAndBlankTags;
 
 @Service
+@RequiredArgsConstructor
 public class ToolTagService {
 
-    @Autowired
-    private ToolRepository toolRepository;
-
-    @Autowired
-    private ToolHelper toolHelper;
+    private final ToolHelper toolHelper;
 
     @Transactional
     public ToolDTO addTagsInTool(List<String> newTags, Long id) {

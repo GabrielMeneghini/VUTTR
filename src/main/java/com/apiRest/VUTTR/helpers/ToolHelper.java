@@ -3,6 +3,7 @@ package com.apiRest.VUTTR.helpers;
 import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
 import com.apiRest.VUTTR.repositories.ToolRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -11,13 +12,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ToolHelper {
 
     private final ToolRepository toolRepository;
-
-    public ToolHelper(ToolRepository toolRepository) {
-        this.toolRepository = toolRepository;
-    }
 
     public Tool validateToolExists(Long id) {
         return toolRepository.findById(id).orElseThrow(

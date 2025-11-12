@@ -7,6 +7,7 @@ import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.exceptions.NoUpdateDetectedException;
 import com.apiRest.VUTTR.helpers.ToolHelper;
 import com.apiRest.VUTTR.repositories.ToolRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,11 @@ import static com.apiRest.VUTTR.helpers.ToolHelper.removeDuplicateAndBlankTags;
 import static com.apiRest.VUTTR.helpers.ToolHelper.updateFieldIfPresent;
 
 @Service
+@RequiredArgsConstructor
 public class ToolService {
 
-    @Autowired
-    private ToolRepository toolRepository;
-
-    @Autowired
-    private ToolHelper toolHelper;
+    private final ToolRepository toolRepository;
+    private final ToolHelper toolHelper;
 
     @Transactional(readOnly = true)
     public List<ToolDTO> findTools(int page, int numItems, String tag) {

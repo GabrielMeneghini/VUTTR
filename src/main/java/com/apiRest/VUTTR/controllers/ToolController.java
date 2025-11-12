@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,10 +20,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tools")
+@RequiredArgsConstructor
 public class ToolController {
 
-    @Autowired
-    private ToolService toolService;
+    private final ToolService toolService;
 
     @GetMapping
     @Validated
