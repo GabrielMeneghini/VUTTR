@@ -12,5 +12,6 @@ public record UserRegisterDTO(@Email
                                       message = "must contain at least 8 characters.")
                               @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])[^\\s]{8,}$",
                                       message = "must contain uppercase, lowercase, number, special character and no spaces.")
+                              @NotBlank
                               String password) {
 }
