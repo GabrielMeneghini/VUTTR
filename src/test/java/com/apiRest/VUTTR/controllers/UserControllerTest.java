@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -53,7 +54,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("User successfully registered."));
 
-        var user = userRepository.findByEmail("emailTeste01@email.com");
+        var user = userRepository.findByEmail("emailTeste01@email.com").orElseThrow(() -> new UsernameNotFoundException("User with email \"emailTeste01@email.com\" not found."));
         assertNotNull(user);
         assertNotEquals("12345@aB", user.getPassword());
         assertTrue(user.getPassword().startsWith("$2"));
