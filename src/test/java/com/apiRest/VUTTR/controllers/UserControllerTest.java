@@ -43,7 +43,7 @@ class UserControllerTest {
     @DisplayName("Should return 200 OK and save the user with an encrypted password when data is valid")
     void registerUser_Scenario01() throws Exception {
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
@@ -63,7 +63,7 @@ class UserControllerTest {
     @ValueSource(strings = {"12345@ab", "12345aaB", "abcde@aB", "12345@AB", "2345@aB", " "})
     @DisplayName("Should return status 400 Bad Request when PASSWORD is not valid")
     void registerUser_Scenario02(String password) throws Exception {
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
@@ -79,7 +79,7 @@ class UserControllerTest {
     void registerUser_Scenario03(String email) throws Exception {
         userRepository.save(new User(null, "emailTeste01@email.com", "12345@aB"));
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                         {
