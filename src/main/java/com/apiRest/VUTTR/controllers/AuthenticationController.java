@@ -1,6 +1,9 @@
 package com.apiRest.VUTTR.controllers;
 
+import com.apiRest.VUTTR.dtos.JwtDTO;
 import com.apiRest.VUTTR.dtos.UserLoginDTO;
+import com.apiRest.VUTTR.entities.User;
+import com.apiRest.VUTTR.services.TokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
 
     @PostMapping
-    public ResponseEntity<String> login(@RequestBody @Valid UserLoginDTO dto) {
+    public ResponseEntity<JwtDTO> login(@RequestBody @Valid UserLoginDTO dto) {
         var authenticationToken = new UsernamePasswordAuthenticationToken(dto.email(), dto.password());
         var authentication = authenticationManager.authenticate(authenticationToken);
 
-        return ResponseEntity.ok().build();
+        User user = (User) authentication.getPrincipal();
+        var jwt = tokenService.createJwt(user);
+
+        return ResponseEntity.ok(new JwtDTO(jwt));
     }
 
 }

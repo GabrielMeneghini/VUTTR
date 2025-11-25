@@ -1,5 +1,6 @@
 package com.apiRest.VUTTR.exceptions;
 
+import com.auth0.jwt.exceptions.JWTCreationException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -59,6 +60,21 @@ public class GlobalExceptionHandler {
                 status.value(),
                 status.getReasonPhrase(),
                 fieldErrors,
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(status).body(errorResponse);
+    }
+
+    @ExceptionHandler(JWTCreationException.class)
+    public ResponseEntity<ErrorResponse> handleJWTCreation(JWTCreationException e, HttpServletRequest request) {
+        var status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        var errorResponse = new ErrorResponse(
+                LocalDateTime.now().toString(),
+                status.value(),
+                status.getReasonPhrase(),
+                "Failed to create JWT",
                 request.getRequestURI()
         );
 
