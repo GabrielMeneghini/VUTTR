@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -56,7 +55,6 @@ public class GlobalExceptionHandler {
                 ));
 
         var errorResponse = new ErrorResponse(
-                LocalDateTime.now().toString(),
                 status.value(),
                 status.getReasonPhrase(),
                 fieldErrors,
@@ -71,7 +69,6 @@ public class GlobalExceptionHandler {
         var status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         var errorResponse = new ErrorResponse(
-                LocalDateTime.now().toString(),
                 status.value(),
                 status.getReasonPhrase(),
                 "Failed to create JWT",
@@ -88,12 +85,6 @@ public class GlobalExceptionHandler {
         String code = error.getCodes()[0];
         int lastDot = code.lastIndexOf('.');
         return lastDot != -1 ? code.substring(lastDot + 1) : code;
-    }
-
-    public record ErrorResponse(String timeStamp, int status, String error, Object message, String path) {
-        public ErrorResponse(int status, String error, Object message, String path) {
-            this(LocalDateTime.now().toString(), status, error, message, path);
-        }
     }
 
 }
