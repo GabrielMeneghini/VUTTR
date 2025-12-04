@@ -32,7 +32,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) throws Exception {
 
         if(h2ConsoleEnabled) {
             http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin())
@@ -42,10 +42,9 @@ public class SecurityConfiguration {
         }
 
         http.csrf(csrf -> csrf.disable())
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/users/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
