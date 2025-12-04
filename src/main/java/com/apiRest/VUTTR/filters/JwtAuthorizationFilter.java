@@ -80,6 +80,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         response.setStatus(status.value());
         response.setContentType("application/json");
+        response.setHeader("WWW-Authenticate",
+                "Bearer realm=\"vuttr\", error=\"invalid_token\"");
         objectMapper.writeValue(response.getWriter(), error);
     }
 
