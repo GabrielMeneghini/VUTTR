@@ -46,7 +46,7 @@ public class SecurityConfiguration {
         http.csrf(csrf -> csrf.disable())
                 .exceptionHandling(
                         ex -> ex.authenticationEntryPoint((req, res, e) -> {
-                            if (req.getServletPath().equals("/login")) {
+                            if (req.getRequestURI().equals("/login")) {
                                 loginAuthenticationEntryPoint.commence(req, res, e);
                             } else {
                                 jwtAuthenticationEntryPoint.commence(req, res, e);
