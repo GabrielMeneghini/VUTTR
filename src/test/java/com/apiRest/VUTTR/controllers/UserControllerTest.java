@@ -19,8 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,7 +47,8 @@ class UserControllerTest {
                 .content("""
                         {
                         	"email": "emailTeste01@email.com",
-                        	"password": "12345@aB"
+                        	"password": "12345@aB",
+                        	"confirmPassword": "12345@aB"
                         }
                         """))
                 .andExpect(status().isOk())
@@ -68,9 +68,10 @@ class UserControllerTest {
                         .content("""
                         {
                         	"email": "emailTeste01@email.com",
-                        	"password": "%s"
+                        	"password": "%s",
+                        	"confirmPassword": "%s"
                         }
-                        """.formatted(password)))
+                        """.formatted(password, password)))
                 .andExpect(status().isBadRequest());
     }
     @ParameterizedTest
@@ -84,10 +85,27 @@ class UserControllerTest {
                         .content("""
                         {
                         	"email": "%s",
-                        	"password": "12345@aB"
+                        	"password": "12345@aB",
+                        	"confirmPassword": "12345@aB"
                         }
                         """.formatted(email)))
                 .andExpect(status().isBadRequest());
+    }
+    @Test
+    @DisplayName("Should return status 400 Bad Request when PASSWORDS do not match")
+    void registerUser_Scenario04() throws Exception {
+
+        mockMvc.perform(post("/users/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                        	"email": "emailTeste01@email.com",
+                        	"password": "12345@aB",
+                        	"confirmPassword": "1234567"
+                        }
+                        """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message[0]").value("Passwords do not match"));
     }
 
 }
