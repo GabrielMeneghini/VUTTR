@@ -12,6 +12,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -35,9 +36,26 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException e, HttpServletRequest request) {
         var status = HttpStatus.BAD_REQUEST;
-        var listMessages = e.getBindingResult().getFieldErrors().stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage()).toList();
-        var errorResponse = new ErrorResponse(status.value(), status.getReasonPhrase(), listMessages, request.getRequestURI());
+
+        // Field-level errors
+        var fieldErrors = e.getBindingResult().getFieldErrors().stream()
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .toList();
+
+        // Class-level errors
+        var objectErrors = e.getBindingResult().getGlobalErrors().stream()
+                .map(err -> err.getDefaultMessage())
+                .toList();
+
+        var listMessages = Stream.concat(fieldErrors.stream(), objectErrors.stream())
+                .toList();
+
+        var errorResponse = new ErrorResponse(
+                status.value(),
+                status.getReasonPhrase(),
+                listMessages,
+                request.getRequestURI()
+        );
 
         return ResponseEntity.status(status).body(errorResponse);
     }

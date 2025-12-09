@@ -66,8 +66,8 @@ class AuthenticationControllerTest {
         assertDoesNotThrow(() -> tokenService.validJwt(jwt));
     }
     @ParameterizedTest
-    @DisplayName("Should return 401 Unauthorized when email and/or password are invalid")
     @CsvSource({"emailTest@test.com, 00000000", "wrongEmail@test.com, 12345&aB", "wrongEmail@test.com, 00000000"})
+    @DisplayName("Should return 401 Unauthorized when email and/or password are invalid")
     void login_Scenario02(String email, String password) throws Exception {
 
         userRepository.save(new User(null, "emailTest@test.com", "$2a$12$ZE7U.fh0.l9UwvVX1rsu1Om6iTq6giMDS6r9Fv/k36Ks4NZC3pyZO"));
@@ -77,17 +77,17 @@ class AuthenticationControllerTest {
         """.formatted(email, password);
 
         mockMvc.perform(
-                    post("/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(json))
+                        post("/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Invalid email or password.")
                 );
 
     }
     @ParameterizedTest
-    @DisplayName("Should return 400 Bad Request when email is blank or invalid")
     @ValueSource(strings = {"", "emailTest"})
+    @DisplayName("Should return 400 Bad Request when email is blank or invalid")
     void login_Scenario03(String email) throws Exception {
         mockMvc.perform(
                     post("/login")
