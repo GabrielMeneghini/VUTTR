@@ -2,6 +2,7 @@ package com.apiRest.VUTTR.controllers;
 
 import com.apiRest.VUTTR.entities.User;
 import com.apiRest.VUTTR.repositories.UserRepository;
+import com.apiRest.VUTTR.services.TokenService;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +18,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,6 +36,9 @@ class UserControllerTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TokenService tokenService;
 
     @BeforeEach
     void setup() {
@@ -78,7 +85,7 @@ class UserControllerTest {
     @ValueSource(strings = {"emailTeste01@email.com", "email teste", " "})
     @DisplayName("Should return status 400 Bad Request when EMAIL is already registered or is not valid")
     void registerUser_Scenario03(String email) throws Exception {
-        userRepository.save(new User(null, "emailTeste01@email.com", "12345@aB"));
+        userRepository.save(new User(null, "emailTeste01@email.com", "12345@aB", null));
 
         mockMvc.perform(post("/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -106,6 +113,51 @@ class UserControllerTest {
                         """))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message[0]").value("Passwords do not match"));
+    }
+
+    @Test
+    @DisplayName("Should return status 204 No Content when account is successfully deleted")
+    void softDeleteAccount_Scenario01() throws Exception {
+
+        var user = userRepository.save(new User(null, "emailTeste01@email.com", "12345@aB", null));
+
+        var jwt = "Bearer " + tokenService.createJwt(user);
+
+        mockMvc.perform(
+                    delete("/users/account")
+                    .header("Authorization", jwt))
+                .andExpect(status().isNoContent());
+
+        var deletedUser = userRepository.findById(user.getId()).orElseThrow();
+        assertTrue(deletedUser.isDeleted());
+    }
+    @Test
+    @DisplayName("Should return status 400 Bad Request when account is already deleted")
+    void softDeleteAccount_Scenario02() throws Exception {
+        var user = userRepository.save(new User(null, "emailTeste01@email.com", "12345@aB", LocalDateTime.now()));
+
+        var jwt = "Bearer " + tokenService.createJwt(user);
+
+        mockMvc.perform(
+                    delete("/users/account")
+                    .header("Authorization", jwt))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message"). value("User already deleted."));
+    }
+    @Test
+    @DisplayName("Should return 401 Unauthorized when no JWT token is provided")
+    void softDeleteAccount_Scenario03() throws Exception {
+        mockMvc.perform(delete("/users/account"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Authentication is required to access this resource."));
+    }
+    @Test
+    @DisplayName("Should return 401 Unauthorized when JWT token is invalid")
+    void softDeleteAccount_Scenario04() throws Exception {
+        mockMvc.perform(delete("/users/account")
+                        .header("Authorization", "Bearer invalid.token.here"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("JWT is invalid or expired."));
     }
 
 }

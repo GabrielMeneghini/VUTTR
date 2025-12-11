@@ -48,7 +48,7 @@ class AuthenticationControllerTest {
     @DisplayName("Should return 200 Ok and correct JWT when fields are valid")
     void login_Scenario01() throws Exception {
 
-        userRepository.save(new User(null, "emailTest@test.com", "$2a$12$ZE7U.fh0.l9UwvVX1rsu1Om6iTq6giMDS6r9Fv/k36Ks4NZC3pyZO"));
+        userRepository.save(new User(null, "emailTest@test.com", "$2a$12$ZE7U.fh0.l9UwvVX1rsu1Om6iTq6giMDS6r9Fv/k36Ks4NZC3pyZO", null));
 
         var response = mockMvc.perform(
                     post("/login")
@@ -70,7 +70,7 @@ class AuthenticationControllerTest {
     @DisplayName("Should return 401 Unauthorized when email and/or password are invalid")
     void login_Scenario02(String email, String password) throws Exception {
 
-        userRepository.save(new User(null, "emailTest@test.com", "$2a$12$ZE7U.fh0.l9UwvVX1rsu1Om6iTq6giMDS6r9Fv/k36Ks4NZC3pyZO"));
+        userRepository.save(new User(null, "emailTest@test.com", "$2a$12$ZE7U.fh0.l9UwvVX1rsu1Om6iTq6giMDS6r9Fv/k36Ks4NZC3pyZO", null));
 
         var json = """
             {"email":"%s","password":"%s"}
