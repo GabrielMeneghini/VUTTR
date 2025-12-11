@@ -17,18 +17,52 @@ import java.util.stream.Stream;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
-        var status = HttpStatus.NOT_FOUND;
-        var errorResponse = new ErrorResponse(status.value(), status.getReasonPhrase(), e.getMessage(), request.getRequestURI());
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(HandlerMethodValidationException e, HttpServletRequest request) {
+        var status = HttpStatus.BAD_REQUEST;
+
+        Map<String, String> fieldErrors = e.getValueResults().stream()
+                .flatMap(vr -> vr.getResolvableErrors().stream())
+                .collect(Collectors.toMap(
+                        this::extractFieldName,
+                        MessageSourceResolvable::getDefaultMessage,
+                        (msg1, msg2) -> msg1
+                ));
+
+        var errorResponse = new ErrorResponse(
+                status.value(),
+                status.getReasonPhrase(),
+                fieldErrors,
+                request.getRequestURI()
+        );
 
         return ResponseEntity.status(status).body(errorResponse);
     }
 
-    @ExceptionHandler(NoUpdateDetectedException.class)
-    public ResponseEntity<ErrorResponse> handleNoUpdateDetected(NoUpdateDetectedException e, HttpServletRequest request) {
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e, HttpServletRequest request) {
         var status = HttpStatus.BAD_REQUEST;
-        var errorResponse = new ErrorResponse(status.value(), status.getReasonPhrase(), e.getMessage(), request.getRequestURI());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                status.value(),
+                status.getReasonPhrase(),
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(status).body(errorResponse);
+    }
+
+    @ExceptionHandler(JWTCreationException.class)
+    public ResponseEntity<ErrorResponse> handleJWTCreation(JWTCreationException e, HttpServletRequest request) {
+        var status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        var errorResponse = new ErrorResponse(
+                status.value(),
+                status.getReasonPhrase(),
+                "Failed to create JWT",
+                request.getRequestURI()
+        );
 
         return ResponseEntity.status(status).body(errorResponse);
     }
@@ -60,38 +94,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(errorResponse);
     }
 
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(HandlerMethodValidationException e, HttpServletRequest request) {
+    @ExceptionHandler(NoUpdateDetectedException.class)
+    public ResponseEntity<ErrorResponse> handleNoUpdateDetected(NoUpdateDetectedException e, HttpServletRequest request) {
         var status = HttpStatus.BAD_REQUEST;
-
-        Map<String, String> fieldErrors = e.getValueResults().stream()
-                .flatMap(vr -> vr.getResolvableErrors().stream())
-                .collect(Collectors.toMap(
-                        this::extractFieldName,
-                        MessageSourceResolvable::getDefaultMessage,
-                        (msg1, msg2) -> msg1
-                ));
-
-        var errorResponse = new ErrorResponse(
-                status.value(),
-                status.getReasonPhrase(),
-                fieldErrors,
-                request.getRequestURI()
-        );
+        var errorResponse = new ErrorResponse(status.value(), status.getReasonPhrase(), e.getMessage(), request.getRequestURI());
 
         return ResponseEntity.status(status).body(errorResponse);
     }
 
-    @ExceptionHandler(JWTCreationException.class)
-    public ResponseEntity<ErrorResponse> handleJWTCreation(JWTCreationException e, HttpServletRequest request) {
-        var status = HttpStatus.INTERNAL_SERVER_ERROR;
-
-        var errorResponse = new ErrorResponse(
-                status.value(),
-                status.getReasonPhrase(),
-                "Failed to create JWT",
-                request.getRequestURI()
-        );
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
+        var status = HttpStatus.NOT_FOUND;
+        var errorResponse = new ErrorResponse(status.value(), status.getReasonPhrase(), e.getMessage(), request.getRequestURI());
 
         return ResponseEntity.status(status).body(errorResponse);
     }
