@@ -1,6 +1,7 @@
 package com.apiRest.VUTTR.controllers;
 
 import com.apiRest.VUTTR.dtos.UserRegisterDTO;
+import com.apiRest.VUTTR.dtos.UserUpdatePasswordDTO;
 import com.apiRest.VUTTR.entities.User;
 import com.apiRest.VUTTR.services.UserService;
 import jakarta.validation.Valid;
@@ -28,6 +29,16 @@ public class UserController {
         userService.softDeleteAccount(userId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/account/password")
+    public ResponseEntity<String> updateAccountPassword(@RequestBody @Valid UserUpdatePasswordDTO dto, Authentication authentication) {
+
+        var userId = ((User) authentication.getPrincipal()).getId();
+
+        userService.updateAccountPassword(dto, userId);
+
+        return ResponseEntity.ok("Password successfully updated.");
     }
 
 }

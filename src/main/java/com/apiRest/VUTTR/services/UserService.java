@@ -1,6 +1,7 @@
 package com.apiRest.VUTTR.services;
 
 import com.apiRest.VUTTR.dtos.UserRegisterDTO;
+import com.apiRest.VUTTR.dtos.UserUpdatePasswordDTO;
 import com.apiRest.VUTTR.entities.User;
 import com.apiRest.VUTTR.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,14 +27,25 @@ public class UserService {
     }
 
     @Transactional
-    public void softDeleteAccount(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found for id: " + id + "."));
+    public void softDeleteAccount(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found for id: " + userId + "."));
 
         if(user.isDeleted()) {
             throw new IllegalStateException("User already deleted.");
         }
 
         user.setDeletedAt(LocalDateTime.now());
+    }
+
+    @Transactional
+    public void updateAccountPassword(UserUpdatePasswordDTO dto, Long userId) {
+        var user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found for id: " + userId + "."));
+
+        if(!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect.");
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.newPassword()));
     }
 
 }
