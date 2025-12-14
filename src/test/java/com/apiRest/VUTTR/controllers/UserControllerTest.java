@@ -3,7 +3,6 @@ package com.apiRest.VUTTR.controllers;
 import com.apiRest.VUTTR.entities.User;
 import com.apiRest.VUTTR.repositories.UserRepository;
 import com.apiRest.VUTTR.services.TokenService;
-import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
