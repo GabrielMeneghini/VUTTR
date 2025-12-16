@@ -4,12 +4,14 @@ import com.apiRest.VUTTR.dtos.ToolCreateDTO;
 import com.apiRest.VUTTR.dtos.ToolDTO;
 import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
 import com.apiRest.VUTTR.services.ToolService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +23,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/tools")
 @RequiredArgsConstructor
+@Tag(
+        name = "Tools",
+        description = "Tool management endpoints"
+)
 public class ToolController {
 
     private final ToolService toolService;
 
     @GetMapping
     @Validated
+    @Operation(summary = "List tools with pagination")
     public ResponseEntity<List<ToolDTO>> findTools(
             @RequestParam
             @Min(0)
@@ -44,11 +51,13 @@ public class ToolController {
     }
     
     @GetMapping("/{id}")
+    @Operation(summary = "Find tool by ID")
     public ResponseEntity<ToolDTO> findToolById(@PathVariable Long id) {
         return ResponseEntity.ok(toolService.findToolById(id));
     }
 
     @PostMapping
+    @Operation(summary = "Add new tool")
     public ResponseEntity<ToolDTO> addTool(@Valid @RequestBody ToolCreateDTO dto, UriComponentsBuilder uriComponentsBuilder) {
         var createdToolDto = toolService.addTool(dto);
 
@@ -60,12 +69,14 @@ public class ToolController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete tool by ID")
     public ResponseEntity<Void> deleteToolById(@PathVariable Long id) {
         toolService.deleteToolById(id);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Update tool")
     public ResponseEntity<ToolDTO> updateTool(@RequestBody @Valid ToolUpdateDTO toolUpdateDTO, @PathVariable Long id) {
         return ResponseEntity.ok(toolService.updateTool(toolUpdateDTO, id));
     }

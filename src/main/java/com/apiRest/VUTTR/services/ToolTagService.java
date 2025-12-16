@@ -3,10 +3,8 @@ package com.apiRest.VUTTR.services;
 import com.apiRest.VUTTR.dtos.ToolDTO;
 import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.helpers.ToolHelper;
-import com.apiRest.VUTTR.repositories.ToolRepository;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

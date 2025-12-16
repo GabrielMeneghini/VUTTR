@@ -2,6 +2,7 @@ package com.apiRest.VUTTR.dtos;
 
 import com.apiRest.VUTTR.validations.PasswordMatchesInterface;
 import com.apiRest.VUTTR.validations.anotations.PasswordMatches;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -21,11 +22,13 @@ public record UserUpdatePasswordDTO (
         String confirmNewPassword
 ) implements PasswordMatchesInterface {
         @Override
+        @JsonIgnore
         public String getPassword() {
             return this.newPassword;
         }
 
         @Override
+        @JsonIgnore
         public String getConfirmPassword() {
             return this.confirmNewPassword;
         }

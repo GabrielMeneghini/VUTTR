@@ -4,6 +4,9 @@ import com.apiRest.VUTTR.dtos.JwtDTO;
 import com.apiRest.VUTTR.dtos.UserLoginDTO;
 import com.apiRest.VUTTR.entities.User;
 import com.apiRest.VUTTR.services.TokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +20,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
+@Tag(
+        name = "Authentication",
+        description = "User authentication endpoints"
+)
 public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
 
     @PostMapping
+    @SecurityRequirements
+    @Operation(summary = "Authenticate user and generate JWT")
     public ResponseEntity<JwtDTO> login(@RequestBody @Valid UserLoginDTO dto) {
         var authenticationToken = new UsernamePasswordAuthenticationToken(dto.email(), dto.password());
         var authentication = authenticationManager.authenticate(authenticationToken);

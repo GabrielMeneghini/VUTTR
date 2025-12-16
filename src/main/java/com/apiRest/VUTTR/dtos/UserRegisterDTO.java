@@ -3,7 +3,10 @@ package com.apiRest.VUTTR.dtos;
 import com.apiRest.VUTTR.validations.PasswordMatchesInterface;
 import com.apiRest.VUTTR.validations.anotations.PasswordMatches;
 import com.apiRest.VUTTR.validations.anotations.UniqueEmail;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @PasswordMatches
 public record UserRegisterDTO(

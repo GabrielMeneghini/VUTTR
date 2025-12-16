@@ -1,4 +1,4 @@
-package com.apiRest.VUTTR.configurations;
+package com.apiRest.VUTTR.configurations.security;
 
 import com.apiRest.VUTTR.filters.JwtAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
