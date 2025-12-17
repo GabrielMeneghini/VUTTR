@@ -19,8 +19,8 @@ public class ToolTagService {
     private final ToolHelper toolHelper;
 
     @Transactional
-    public ToolDTO addTagsInTool(List<String> newTags, Long id) {
-        Tool tool = toolHelper.validateToolExists(id);
+    public ToolDTO addTagsInTool(List<String> newTags, Long toolId) {
+        Tool tool = toolHelper.validateToolExists(toolId);
 
         tool.getTags().addAll(newTags);
         removeDuplicateAndBlankTags(tool);

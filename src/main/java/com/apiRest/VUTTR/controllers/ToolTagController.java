@@ -24,7 +24,7 @@ public class ToolTagController {
 
     private final ToolTagService toolTagService;
 
-    @PostMapping("/{id}/tags")
+    @PostMapping("/{toolId}/tags")
     @Operation(summary = "Add tag(s) to tool")
     public ResponseEntity<ToolDTO> addTagsInTool(
              @RequestBody
@@ -36,8 +36,8 @@ public class ToolTagController {
              List<String> newTags,
 
              @PathVariable
-             Long id) {
-        return ResponseEntity.ok(toolTagService.addTagsInTool(newTags, id));
+             Long toolId) {
+        return ResponseEntity.ok(toolTagService.addTagsInTool(newTags, toolId));
     }
 
     @DeleteMapping("/{toolId}/tags")
