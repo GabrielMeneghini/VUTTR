@@ -5,6 +5,7 @@ import com.apiRest.VUTTR.dtos.ToolDTO;
 import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
 import com.apiRest.VUTTR.services.ToolService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -37,15 +38,18 @@ public class ToolController {
     public ResponseEntity<List<ToolDTO>> findTools(
             @RequestParam
             @Min(0)
+            @Parameter(description = "Page number (zero-based)", example = "0")
             int page,
 
             @RequestParam
             @Min(1)
+            @Parameter(description = "Number of items per page", example = "10")
             int numItems,
 
             @RequestParam(required = false)
             @Size(min = 2, max = 30)
             @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ0-9]+$")
+            @Parameter(description = "Filter tools by tag name", example = "java")
             String tag) {
         return ResponseEntity.ok(toolService.findTools(page, numItems, tag));
     }

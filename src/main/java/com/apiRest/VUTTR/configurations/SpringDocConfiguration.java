@@ -26,7 +26,7 @@ public class SpringDocConfiguration {
                 .info(new Info()
                         .title("VUTTR API")
                         .version("v1")
-                        .description("VUTTR (Very Useful Tools to Remember) is a simple repository for managing tools along with their names, links, descriptions, and tags.")
+                        .description("VUTTR (Very Useful Tools to Remember) is a simple repository for managing tools along with their names, links, descriptions, and tags. Authentication is handled via JWT.")
                         .contact(new Contact()
                                 .name("Gabriel Meneghini")
                                 .email("gabriel.meneghini.francelino@gmail.com")));
