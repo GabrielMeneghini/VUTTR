@@ -49,13 +49,13 @@ class ToolServiceTest {
                 new Tool(null, "fastify", "https://www.fastify.io/", "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.", Arrays.asList("web", "framework", "node", "http2", "https", "localhost"))
         );
         Page<Tool> pageTools = new PageImpl<>(tools, pageable, tools.size());
-        when(toolRepository.findAll(pageable)).thenReturn(pageTools);
+        when(toolRepository.findAllFetchingTags(pageable)).thenReturn(pageTools);
 
         // Act
         var result = toolService.findTools(0, 10, null);
 
         // Assert
-        verify(toolRepository).findAll(pageable);
+        verify(toolRepository).findAllFetchingTags(pageable);
         verify(toolRepository, never()).findByTag(any(Pageable.class),anyString());
         result.forEach(dto -> assertInstanceOf(ToolDTO.class, dto));
         assertEquals(3, result.size());

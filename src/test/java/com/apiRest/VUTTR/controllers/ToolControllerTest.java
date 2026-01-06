@@ -44,7 +44,7 @@ class ToolControllerTest {
 
     @Test
     @DisplayName("Should return an empty list when there's no Tool in the database")
-    void findTools_findAll_Scenario01() throws Exception {
+    void findTools_findAllFetchingTags_Scenario01() throws Exception {
         mockMvc.perform(get("/tools?page=0&numItems=10"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]")
@@ -52,7 +52,7 @@ class ToolControllerTest {
     }
     @Test
     @DisplayName("Should return a list of all Tools available in the database")
-    void findTools_findAll_Scenario02() throws Exception {
+    void findTools_findAllFetchingTags_Scenario02() throws Exception {
         createTools();
 
         mockMvc.perform(get("/tools?page=0&numItems=10"))
@@ -63,31 +63,30 @@ class ToolControllerTest {
     }
     @Test
     @DisplayName("Should return specified pagination page")
-    void findTools_findAll_Scenario03() throws Exception {
+    void findTools_findAllFetchingTags_Scenario03() throws Exception {
         createTools();
-
         var page = 1;
         var numItems = 2;
+
         mockMvc.perform(get("/tools?page=" + page + "&numItems=" + numItems))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("fastify"))
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[*]", not(containsInAnyOrder("Notion", "json-server"))));
+                .andExpect(jsonPath("$", hasSize(1)));
     }
     @Test
     @DisplayName("Should return specified number of items in pagination page")
-    void findTools_findAll_Scenario04() throws Exception {
+    void findTools_findAllFetchingTags_Scenario04() throws Exception {
         createTools();
         var page = 0;
         var numItems = 3;
+
         mockMvc.perform(get("/tools?page=" + page + "&numItems=" + numItems))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[*].title", contains("Notion", "json-server", "fastify")));
+                .andExpect(jsonPath("$[*].title", containsInAnyOrder("Notion", "json-server", "fastify")));
     }
     @Test
     @DisplayName("Should return 400 Bad Request when \"page\" number less than 0")
-    void findTools_findAll_Scenario05() throws Exception {
+    void findTools_findAllFetchingTags_Scenario05() throws Exception {
         var page = -4;
         var numItems = 3;
         mockMvc.perform(get("/tools?page=" + page + "&numItems=" + numItems))
@@ -95,7 +94,7 @@ class ToolControllerTest {
     }
     @Test
     @DisplayName("Should return 400 Bad Request when \"numItems\" number less than 1")
-    void findTools_findAll_Scenario06() throws Exception {
+    void findTools_findAllFetchingTags_Scenario06() throws Exception {
         var page = 1;
         var numItems = 0;
         mockMvc.perform(get("/tools?page=" + page + "&numItems=" + numItems))

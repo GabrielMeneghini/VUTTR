@@ -1,6 +1,7 @@
 package com.apiRest.VUTTR.repositories;
 
 import com.apiRest.VUTTR.entities.Tool;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +14,13 @@ import java.util.Optional;
 
 @Repository
 public interface ToolRepository extends JpaRepository<Tool, Long> {
+
+    @Query("""
+        SELECT DISTINCT t
+        FROM Tool t
+        LEFT JOIN FETCH t.tags
+        """)
+    Page<Tool> findAllFetchingTags(Pageable pageable);
 
     @Query(nativeQuery = true, value = """
             SELECT t.*
@@ -29,4 +37,5 @@ public interface ToolRepository extends JpaRepository<Tool, Long> {
     boolean existsByTitleIgnoreCase(String value);
 
     boolean existsByLink(String link);
+
 }
