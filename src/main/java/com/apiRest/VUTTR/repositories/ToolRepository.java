@@ -19,16 +19,19 @@ public interface ToolRepository extends JpaRepository<Tool, Long> {
         SELECT DISTINCT t
         FROM Tool t
         LEFT JOIN FETCH t.tags
-        """)
+    """)
     Page<Tool> findAllFetchingTags(Pageable pageable);
 
-    @Query(nativeQuery = true, value = """
-            SELECT t.*
-            FROM tools t
-            INNER JOIN tool_tags tt
-                ON t.id = tt.tool_id
-            WHERE tt.tag ILIKE :tag
-            """)
+    @Query("""
+          SELECT DISTINCT t
+          FROM Tool t
+          LEFT JOIN FETCH t.tags
+          WHERE EXISTS (
+              SELECT 1
+              FROM t.tags tag
+              WHERE LOWER(tag) = LOWER(:tag)
+          )
+    """)
     List<Tool> findByTag(Pageable pageable, @Param("tag") String tag);
 
     @EntityGraph(attributePaths = "tags")

@@ -47,7 +47,7 @@ public class ToolController {
 
             @RequestParam(required = false)
             @Size(min = 2, max = 30)
-            @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ0-9]+$")
+            @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ0-9]+$",  message = "Tag must contain only letters (including accented ones) and numbers")
             @Parameter(description = "Filter tools by tag name", example = "java")
             String tag) {
         return ResponseEntity.ok(toolService.findTools(page, numItems, tag));
