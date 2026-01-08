@@ -100,6 +100,23 @@ class ToolControllerTest {
         mockMvc.perform(get("/tools?page=" + page + "&numItems=" + numItems))
                 .andExpect(status().isBadRequest());
     }
+    @Test
+    @DisplayName("Should return all tags of each tool when no tag filter is provided")
+    void findTools_findAllFetchingTags_Scenario07() throws Exception {
+        createAndSaveTools();
+
+        var page = 0;
+        var numItems = 10;
+
+        mockMvc.perform(get("/tools")
+                    .param("page", String.valueOf(page))
+                    .param("numItems", String.valueOf(numItems)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[?(@.title=='Notion')].tags.length()").value(5))
+                .andExpect(jsonPath("$[?(@.title=='json-server')].tags.length()").value(6))
+                .andExpect(jsonPath("$[?(@.title=='fastify')].tags.length()").value(6));
+    }
 
     @Test
     @DisplayName("Should return an empty list when there's no Tool in the database with the specified tag")
@@ -157,6 +174,26 @@ class ToolControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[*].title", contains("json-server", "fastify", "json-server"))
+        );
+    }
+    @Test
+    @DisplayName("Should return all tags of each tool when filtering by tag")
+    void findTools_findByTag_Scenario06() throws Exception {
+        createAndSaveTools();
+
+        var page = 0;
+        var numItems = 10;
+        var tag = "node";
+
+        mockMvc.perform(get("/tools")
+                    .param("page", String.valueOf(page))
+                    .param("numItems", String.valueOf(numItems))
+                    .param("tag", tag))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[*].title", containsInAnyOrder("json-server", "fastify")))
+                .andExpect(jsonPath("$[?(@.title=='json-server')].tags.length()").value(6))
+                .andExpect(jsonPath("$[?(@.title=='fastify')].tags.length()").value(6)
         );
     }
 
