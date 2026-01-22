@@ -1,0 +1,23 @@
+# Maven
+target/
+.mvn/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+
+# SO
+.DS_Store
+Thumbs.db
+
+# Environment
+.env.prod
+.env.dev
