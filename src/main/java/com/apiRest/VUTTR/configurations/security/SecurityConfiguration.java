@@ -2,7 +2,6 @@ package com.apiRest.VUTTR.configurations.security;
 
 import com.apiRest.VUTTR.filters.JwtAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,9 +22,6 @@ public class SecurityConfiguration {
 
     private final JwtAuthorizationFilter jwtFilter;
 
-    @Value("${security.h2-console.enabled:false}")
-    private boolean h2ConsoleEnabled;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
@@ -35,13 +31,6 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
                                                    LoginAuthenticationEntryPoint loginAuthenticationEntryPoint) throws Exception {
-
-        if(h2ConsoleEnabled) {
-            http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin())
-            ).authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/h2-console/**").permitAll()
-            );
-        }
 
         http.csrf(csrf -> csrf.disable())
                 .exceptionHandling(
