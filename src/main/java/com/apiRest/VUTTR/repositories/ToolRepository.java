@@ -19,6 +19,7 @@ public interface ToolRepository extends JpaRepository<Tool, Long> {
         SELECT DISTINCT t
         FROM Tool t
         LEFT JOIN FETCH t.tags
+        ORDER BY t.title
     """)
     Page<Tool> findAllFetchingTags(Pageable pageable);
 
@@ -31,6 +32,7 @@ public interface ToolRepository extends JpaRepository<Tool, Long> {
               FROM t.tags tag
               WHERE LOWER(tag) = LOWER(:tag)
           )
+          ORDER BY t.title
     """)
     List<Tool> findByTag(Pageable pageable, @Param("tag") String tag);
 

@@ -56,7 +56,7 @@ class ToolControllerTest {
         );
     }
     @Test
-    @DisplayName("Should return a list of all Tools available in the database")
+    @DisplayName("Should return a list of all Tools available in the database, ordered by title")
     void findTools_findAllFetchingTags_Scenario02() throws Exception {
         createAndSaveTools();
 
@@ -68,7 +68,7 @@ class ToolControllerTest {
                         .param("numItems", String.valueOf(numItems)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[*].title", containsInAnyOrder("Notion", "json-server", "fastify"))
+                .andExpect(jsonPath("$[*].title", contains("fastify", "json-server", "Notion"))
         );
     }
     @Test
@@ -165,7 +165,7 @@ class ToolControllerTest {
                         .param("tag", tag))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[*].title", containsInAnyOrder("json-server", "fastify"))
+                .andExpect(jsonPath("$[*].title", contains("fastify", "json-server"))
         );
     }
     @ParameterizedTest
@@ -191,7 +191,7 @@ class ToolControllerTest {
                         .param("tag", tag))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[*].title", contains("json-server", "fastify"))
+                .andExpect(jsonPath("$[*].title", contains("json-server", "json-server"))
         );
     }
     @Test
@@ -210,7 +210,7 @@ class ToolControllerTest {
                         .param("tag", tag))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[*].title", contains("json-server", "fastify", "json-server"))
+                .andExpect(jsonPath("$[*].title", contains("fastify", "fastify", "json-server"))
         );
     }
     @Test
