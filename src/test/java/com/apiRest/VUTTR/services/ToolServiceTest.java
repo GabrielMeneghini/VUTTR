@@ -8,6 +8,7 @@ import com.apiRest.VUTTR.exceptions.NoUpdateDetectedException;
 import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
 import com.apiRest.VUTTR.helpers.ToolHelper;
 import com.apiRest.VUTTR.repositories.ToolRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,49 +38,52 @@ class ToolServiceTest {
     private ToolHelper toolHelper;
 
     @Test
-    @DisplayName("Should return all tools when tag is null")
-    void findTools_findAll_Scenario01() {
+    @DisplayName("Should convert Tools to DTO")
+    void findTools_Scenario01() {
         // Arrange
-        PageRequest pageable = PageRequest.of(0, 10);
-        List<Tool> tools = List.of(
-                new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")),
-                new Tool(null, "json-server", "https://github.com/typicode/json-server", "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.", Arrays.asList("api", "json", "schema", "node", "github", "rest")),
-                new Tool(null, "fastify", "https://www.fastify.io/", "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.", Arrays.asList("web", "framework", "node", "http2", "https", "localhost"))
-        );
-        Page<Tool> pageTools = new PageImpl<>(tools, pageable, tools.size());
-        when(toolRepository.findAllFetchingTags(pageable)).thenReturn(pageTools);
+        Tool tool = new Tool();
+        tool.setTitle("Docker");
+        Page<Tool> page = new PageImpl<>(List.of(tool));
+        when(toolRepository.findByTagAndTitle(any(), any(), any()))
+                .thenReturn(page);
 
         // Act
-        var result = toolService.findTools(0, 10, null);
+        List<ToolDTO> result = toolService.findTools(0, 10, null, null);
 
         // Assert
-        verify(toolRepository).findAllFetchingTags(pageable);
-        verify(toolRepository, never()).findByTag(any(Pageable.class),anyString());
-        result.forEach(dto -> assertInstanceOf(ToolDTO.class, dto));
-        assertEquals(3, result.size());
-        assertEquals("json-server", result.get(1).title());
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("Docker", result.get(0).title());
     }
     @Test
-    @DisplayName("Should return only attaching results when tag is specified")
-    void findTools_findByTag_Scenario01() {
+    @DisplayName("Should return empty list when repository returns empty page")
+    void findTools_Scenario02() {
         // Arrange
-        PageRequest pageable = PageRequest.of(0, 10);
-        List<Tool> tools = List.of(
-                new Tool(null, "json-server", "https://github.com/typicode/json-server", "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.", Arrays.asList("api", "json", "schema", "node", "github", "rest")),
-                new Tool(null, "fastify", "https://www.fastify.io/", "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.", Arrays.asList("web", "framework", "node", "http2", "https", "localhost"))
-        );
-        var tag = "node";
-        when(toolRepository.findByTag(pageable, tag)).thenReturn(tools);
+        when(toolRepository.findByTagAndTitle(any(), any(), any())).thenReturn(Page.empty());
 
         // Act
-        var result = toolService.findTools(0, 10, tag);
+        List<ToolDTO> result = toolService.findTools(0, 10, null, null);
 
         // Assert
-        verify(toolRepository).findByTag(pageable, tag);
-        verify(toolRepository, never()).findAll(any(Pageable.class));
-        result.forEach(dto -> assertInstanceOf(ToolDTO.class, dto));
-        assertEquals(2, result.size());
-        assertEquals("fastify", result.get(1).title());
+        Assertions.assertTrue(result.isEmpty());
+    }
+    @Test
+    @DisplayName("Should preserve repository order when mapping Tool to ToolDTO")
+    void findTools_Scenario03() {
+        // Arrange
+        Tool t1 = new Tool(); t1.setTitle("ATool1");
+        Tool t2 = new Tool(); t2.setTitle("BTool2");
+        Tool t3 = new Tool(); t3.setTitle("CTool3");
+        Page<Tool> page = new PageImpl<>(List.of(t1, t2, t3));
+
+        when(toolRepository.findByTagAndTitle(any(), any(), any())).thenReturn(page);
+
+        // Act
+        List<ToolDTO> result = toolService.findTools(0, 10, null, null);
+
+        // Assert
+        Assertions.assertEquals("ATool1", result.get(0).title());
+        Assertions.assertEquals("BTool2", result.get(1).title());
+        Assertions.assertEquals("CTool3", result.get(2).title());
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.apiRest.VUTTR.controllers;
 
 import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.repositories.ToolRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -42,7 +45,9 @@ public class ToolTagControllerTest {
     @Test
     @DisplayName("Should save the new tags and return the affected Tool when JSON is valid")
     void addTagsInTool_Scenario01() throws Exception  {
-        var tool = toolRepository.save(new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
+        var tool = toolRepository.save(new Tool(null, "Notion", "https://notion.so",
+                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                new ArrayList<>(Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"))));
 
         mockMvc.perform(post("/tools/" + tool.getId() + "/tags")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -85,17 +90,20 @@ public class ToolTagControllerTest {
     @Test
     @DisplayName("Should return status 204 No Content when tags were successfully deleted")
     void deleteToolTagByName_Scenario01() throws Exception {
-        var tool = toolRepository.save(new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
-                Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
+        var tool = toolRepository.save(new Tool(null, "Notion", "https://notion.so",
+                "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
+                new ArrayList<>(Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"))));
+        var toolId = tool.getId();
 
-        mockMvc.perform(delete("/tools/" + tool.getId() + "/tags")
+        mockMvc.perform(delete("/tools/" + toolId + "/tags")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("[\"planning\", \"writing\"]"))
                 .andExpect(status().isNoContent());
 
-        var updatedTool = toolRepository.findById(tool.getId()).get();
-        assertFalse(updatedTool.getTags().containsAll(Arrays.asList("planning", "writing")));
-        assertTrue(updatedTool.getTags().containsAll(Arrays.asList("organization", "collaboration", "calendar")));
+        var updatedTool = toolRepository.findById(toolId).get();
+        assertFalse(updatedTool.getTags().containsAll(List.of("planning", "writing")));
+        assertTrue(updatedTool.getTags().containsAll(List.of("organization", "collaboration", "calendar")
+        ));
     }
     @Test
     @DisplayName("Should return status 400 Bad Request when JSON is empty")

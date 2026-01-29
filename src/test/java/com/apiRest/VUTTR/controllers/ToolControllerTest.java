@@ -2,6 +2,7 @@ package com.apiRest.VUTTR.controllers;
 
 import com.apiRest.VUTTR.entities.Tool;
 import com.apiRest.VUTTR.repositories.ToolRepository;
+import com.apiRest.VUTTR.testhelpers.ToolTestHelper;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,13 +18,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -37,58 +38,37 @@ class ToolControllerTest {
     @Autowired
     private ToolRepository toolRepository;
 
+    @Autowired
+    private ToolTestHelper toolTestHelper;
+
     @BeforeEach
     void setup() {
         toolRepository.deleteAll();
     }
-
-    @Test
-    @DisplayName("Should return an empty list when there's no Tool in the database")
-    void findTools_findAllFetchingTags_Scenario01() throws Exception {
-        var page = 0;
-        var numItems = 10;
-
-        mockMvc.perform(get("/tools")
-                        .param("page", String.valueOf(page))
-                        .param("numItems", String.valueOf(numItems)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0))
-        );
-    }
-    @Test
-    @DisplayName("Should return a list of all Tools available in the database, ordered by title")
-    void findTools_findAllFetchingTags_Scenario02() throws Exception {
-        createAndSaveTools();
-
-        var page = 0;
-        var numItems = 10;
-
-        mockMvc.perform(get("/tools")
-                        .param("page", String.valueOf(page))
-                        .param("numItems", String.valueOf(numItems)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[*].title", contains("fastify", "json-server", "Notion"))
-        );
-    }
+    
     @Test
     @DisplayName("Should return specified pagination page")
-    void findTools_findAllFetchingTags_Scenario03() throws Exception {
-        createAndSaveTools();
+    void findTools_Scenario01() throws Exception {
+        toolTestHelper.createAndSaveTools();
 
         var page = 1;
-        var numItems = 2;
+        var numItems = 6;
 
         mockMvc.perform(get("/tools")
                         .param("page", String.valueOf(page))
                         .param("numItems", String.valueOf(numItems)))
+                .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
+                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(jsonPath("$[0].title").value("Notion"))
+                .andExpect(jsonPath("$[1].title").value("PostgreSQL"))
+                .andExpect(jsonPath("$[2].title").value("Postman"))
+                .andExpect(jsonPath("$[3].title").value("Visual Studio Code"));
     }
     @Test
     @DisplayName("Should return specified number of items in pagination page")
-    void findTools_findAllFetchingTags_Scenario04() throws Exception {
-        createAndSaveTools();
+    void findTools_Scenario02() throws Exception {
+        toolTestHelper.createAndSaveTools();
 
         var page = 0;
         var numItems = 3;
@@ -98,11 +78,11 @@ class ToolControllerTest {
                         .param("numItems", String.valueOf(numItems)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[*].title", containsInAnyOrder("Notion", "json-server", "fastify")));
+                .andExpect(jsonPath("$[*].title", contains("Docker", "fastify", "GitHub")));
     }
     @Test
     @DisplayName("Should return 400 Bad Request when \"page\" number less than 0")
-    void findTools_findAllFetchingTags_Scenario05() throws Exception {
+    void findTools_Scenario03() throws Exception {
         var page = -4;
         var numItems = 3;
 
@@ -113,7 +93,7 @@ class ToolControllerTest {
     }
     @Test
     @DisplayName("Should return 400 Bad Request when \"numItems\" number less than 1")
-    void findTools_findAllFetchingTags_Scenario06() throws Exception {
+    void findTools_Scenario04() throws Exception {
         var page = 1;
         var numItems = 0;
 
@@ -123,37 +103,43 @@ class ToolControllerTest {
                 .andExpect(status().isBadRequest());
     }
     @Test
-    @DisplayName("Should return all tags of each tool when no tag filter is provided")
-    void findTools_findAllFetchingTags_Scenario07() throws Exception {
-        createAndSaveTools();
+    @DisplayName("Should return all tags of each tool")
+    void findTools_Scenario05() throws Exception {
+        toolTestHelper.createAndSaveTools();
 
         var page = 0;
-        var numItems = 10;
+        var numItems = 3;
 
         mockMvc.perform(get("/tools")
                     .param("page", String.valueOf(page))
                     .param("numItems", String.valueOf(numItems)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[?(@.title=='Notion')].tags.length()").value(5))
-                .andExpect(jsonPath("$[?(@.title=='json-server')].tags.length()").value(6))
-                .andExpect(jsonPath("$[?(@.title=='fastify')].tags.length()").value(6));
+                .andExpect(jsonPath("$[?(@.title=='Docker')].tags.length()").value(4))
+                .andExpect(jsonPath("$[?(@.title=='fastify')].tags.length()").value(7))
+                .andExpect(jsonPath("$[?(@.title=='GitHub')].tags.length()").value(4));
     }
-
     @Test
     @DisplayName("Should return an empty list when there's no Tool in the database with the specified tag")
-    void findTools_findByTag_Scenario01() throws Exception {
-        createAndSaveTools();
+    void findTools_Scenario06() throws Exception {
+        toolTestHelper.createAndSaveTools();
 
-        mockMvc.perform(get("/tools?page=0&numItems=10&tag=nonexistentTag"))
+        var page = 0;
+        var numItems = 10;
+        var tag = "nonexistentTag";
+
+        mockMvc.perform(get("/tools")
+                    .param("page", String.valueOf(page))
+                    .param("numItems", String.valueOf(numItems))
+                    .param("tag", String.valueOf(tag)))
                 .andExpect(status().isOk())
-                .andExpect(content().json("[]")
+                .andExpect(jsonPath("$", hasSize(0))
         );
     }
     @Test
     @DisplayName("Should return a list of all Tools with the specified tag available in the database")
-    void findTools_findByTag_Scenario02() throws Exception {
-        createAndSaveTools();
+    void findTools_Scenario07() throws Exception {
+        toolTestHelper.createAndSaveTools();
 
         var page = 0;
         var numItems = 10;
@@ -171,34 +157,15 @@ class ToolControllerTest {
     @ParameterizedTest
     @DisplayName("Should return status 400 Bad Request for invalid tag")
     @ValueSource(strings = {"0", "0123456789012345678901234567890", "@node"})
-    void findTools_findByTag_Scenario03_InvalidTags(String tag) throws Exception {
+    void findTools_Scenario08_InvalidTags(String tag) throws Exception {
         mockMvc.perform(get("/tools?tag=" + tag))
                 .andExpect(status().isBadRequest());
     }
     @Test
-    @DisplayName("Should return specified pagination page when searching by tag")
-    void findTools_findByTag_Scenario04() throws Exception {
-        createAndSaveTools();
-        createAndSaveTools();
-
-        var page = 1;
-        var numItems = 2;
-        var tag = "node";
-
-        mockMvc.perform(get("/tools")
-                        .param("page", String.valueOf(page))
-                        .param("numItems", String.valueOf(numItems))
-                        .param("tag", tag))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[*].title", contains("json-server", "json-server"))
-        );
-    }
-    @Test
     @DisplayName("Should return specified number of items in pagination page when searching by tag")
-    void findTools_findByTag_Scenario05() throws Exception {
-        createAndSaveTools();
-        createAndSaveTools();
+    void findTools_Scenario09() throws Exception {
+        toolTestHelper.createAndSaveTools();
+        toolTestHelper.createAndSaveTools();
 
         var page = 0;
         var numItems = 3;
@@ -213,31 +180,11 @@ class ToolControllerTest {
                 .andExpect(jsonPath("$[*].title", contains("fastify", "fastify", "json-server"))
         );
     }
-    @Test
-    @DisplayName("Should return all tags of each tool when filtering by tag")
-    void findTools_findByTag_Scenario06() throws Exception {
-        createAndSaveTools();
-
-        var page = 0;
-        var numItems = 10;
-        var tag = "node";
-
-        mockMvc.perform(get("/tools")
-                    .param("page", String.valueOf(page))
-                    .param("numItems", String.valueOf(numItems))
-                    .param("tag", tag))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[*].title", containsInAnyOrder("json-server", "fastify")))
-                .andExpect(jsonPath("$[?(@.title=='json-server')].tags.length()").value(6))
-                .andExpect(jsonPath("$[?(@.title=='fastify')].tags.length()").value(6)
-        );
-    }
 
     @Test
     @DisplayName("Should return Tool of correct id")
     void findToolById_Scenario01() throws Exception {
-        var toolList = createAndSaveTools();
+        var toolList = toolTestHelper.createAndSaveTools();
         var toolToBeFound = toolList.get(2);
 
         mockMvc.perform(get("/tools/" + toolToBeFound.getId()))
@@ -344,6 +291,9 @@ class ToolControllerTest {
     void updateTool_Scenario01() throws Exception {
         var tool = toolRepository.save(new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
                 Arrays.asList("organization", "planning", "collaboration", "writing", "calendar")));
+        var oldTitle = tool.getTitle();
+        var oldLink = tool.getLink();
+        var oldDescription = tool.getDescription();
 
         mockMvc.perform(patch("/tools/" + tool.getId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -355,10 +305,13 @@ class ToolControllerTest {
                         }
                         """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(tool.getTitle()))
-                .andExpect(jsonPath("$.link").value(tool.getLink()))
+                .andExpect(jsonPath("$.title").value(oldTitle))
+                .andExpect(jsonPath("$.link").value(oldLink))
                 .andExpect(jsonPath("$.description").value("New description"))
-                .andExpect(jsonPath("$.description").value(not(tool.getDescription())));
+                .andExpect(jsonPath("$.description").value(not(oldDescription)));
+
+        var updatedTool = toolRepository.findById(tool.getId()).orElseThrow();
+        assertEquals("New description", updatedTool.getDescription());
     }
     @Test
     @DisplayName("Should return status 400 Bad Request when TITLE is not unique")
@@ -447,10 +400,4 @@ class ToolControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    private List<Tool> createAndSaveTools() {
-        Tool tool1 = new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
-        Tool tool2 = new Tool(null, "json-server", "https://github.com/typicode/json-server", "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.", Arrays.asList("api", "json", "schema", "node", "github", "rest"));
-        Tool tool3 = new Tool(null, "fastify", "https://www.fastify.io/", "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.", Arrays.asList("web", "framework", "node", "http2", "https", "localhost"));
-        return toolRepository.saveAll(Arrays.asList(tool1, tool2, tool3));
-    }
 }

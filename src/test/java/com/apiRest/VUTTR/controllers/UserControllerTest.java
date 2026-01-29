@@ -166,6 +166,7 @@ class UserControllerTest {
     @DisplayName("Should return 200 Ok and update password when data is valid")
     void updateAccountPassword_Scenario01() throws Exception {
         var user = userRepository.save(new User(null, "emailTeste01@email.com", "$2a$12$pndAUm74Zy0S3X7kHxHx2eNoinSyzqkOcp4DZigAe62gouV6BW6OS", null));
+        var oldPassword = user.getPassword();
 
         var jwt = "Bearer " + tokenService.createJwt(user);
 
@@ -184,8 +185,8 @@ class UserControllerTest {
 
         var updatedPassword = userRepository.findByEmail(user.getEmail()).orElseThrow().getPassword();
 
-        assertNotEquals(user.getPassword(), updatedPassword);
-        assertTrue(passwordEncoder.matches("12345%aB", user.getPassword()));
+        assertNotEquals(oldPassword, updatedPassword);
+        assertTrue(passwordEncoder.matches("12345%aB", oldPassword));
         assertTrue(passwordEncoder.matches("789&DEfg", updatedPassword));
     }
     @Test

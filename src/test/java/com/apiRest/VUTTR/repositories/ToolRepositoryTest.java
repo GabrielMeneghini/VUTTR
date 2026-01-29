@@ -1,18 +1,21 @@
 package com.apiRest.VUTTR.repositories;
 
 import com.apiRest.VUTTR.entities.Tool;
+import com.apiRest.VUTTR.testhelpers.ToolTestHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Arrays;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@Import(ToolTestHelper.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 class ToolRepositoryTest {
@@ -20,43 +23,105 @@ class ToolRepositoryTest {
     @Autowired
     private ToolRepository toolRepository;
 
+    @Autowired
+    private ToolTestHelper toolTestHelper;
+
     @Test
-    @DisplayName("Should return an empty list if no Tools were found with the informed tag")
-    void findByTag_Scenario01() {
+    @DisplayName("Should return all Tools when no tag and no title is specified.")
+    void findByTagAndTitle_Scenario01() {
         // Arrange
-        PageRequest pageable = PageRequest.of(0, 10);
-        String tag = "nonexistentTag";
-        Tool tool1 = new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "writing", "calendar"));
-        Tool tool2 = new Tool(null, "json-server", "https://github.com/typicode/json-server", "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.", Arrays.asList("api", "json", "schema", "node", "github", "rest"));
-        Tool tool3 = new Tool(null, "fastify", "https://www.fastify.io/", "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.", Arrays.asList("web", "framework", "node", "http2", "https", "localhost"));
-        toolRepository.saveAll(Arrays.asList(tool1, tool2, tool3));
+        toolTestHelper.createAndSaveTools();
 
         // Act
-        var list = toolRepository.findByTag(pageable, tag);
+        var result = toolRepository.findByTagAndTitle(PageRequest.of(0, 10), null, null);
 
         // Assert
-        Assertions.assertTrue(list.isEmpty());
-
+        Assertions.assertEquals(10, result.getTotalElements());
     }
     @Test
-    @DisplayName("Should return all the Tools that were found with the informed tag")
-    void findByTag_Scenario02() {
+    @DisplayName("Should return only Tools with specified TAG")
+    void findByTagAndTitle_Scenario02() {
         // Arrange
-        PageRequest pageable = PageRequest.of(0, 10);
-        String tag = "existentTag";
-        Tool tool1 = new Tool(null, "Notion", "https://notion.so", "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.", Arrays.asList("organization", "planning", "collaboration", "existentTag", "writing", "calendar"));
-        Tool tool2 = new Tool(null, "json-server", "https://github.com/typicode/json-server", "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges.", Arrays.asList("api", "json", "schema", "node", "github", "rest"));
-        Tool tool3 = new Tool(null, "fastify", "https://www.fastify.io/", "Extremely fast and simple, low-overhead web framework for NodeJS. Supports HTTP2.", Arrays.asList("existentTag", "web", "framework", "node", "http2", "https", "localhost"));
-        toolRepository.saveAll(Arrays.asList(tool1, tool2, tool3));
+        toolTestHelper.createAndSaveTools();
 
         // Act
-        var list = toolRepository.findByTag(pageable, tag);
+        var result = toolRepository.findByTagAndTitle(PageRequest.of(0, 10), "node", null);
 
         // Assert
-        Assertions.assertFalse(list.isEmpty());
-        Assertions.assertEquals(2, list.size());
-        Assertions.assertEquals("Notion", list.get(0).getTitle());
-        Assertions.assertEquals("fastify", list.get(1).getTitle());
+        Assertions.assertEquals(2, result.getTotalElements());
+        Assertions.assertTrue(
+                result.getContent().stream()
+                        .allMatch(t -> t.getTags().contains("node"))
+        );
+    }
+    @Test
+    @DisplayName("Should return only Tools with matching TITLE")
+    void findByTagAndTitle_Scenario03() {
+        // Arrange
+        toolTestHelper.createAndSaveTools();
+
+        // Act
+        var result = toolRepository.findByTagAndTitle(PageRequest.of(0, 10), null, "sql");
+
+        // Assert
+        Assertions.assertEquals(2, result.getTotalElements());
+        Assertions.assertTrue(
+                result.getContent().stream()
+                        .allMatch(t -> t.getTitle().toLowerCase().contains("sql"))
+        );
+    }
+    @Test
+    @DisplayName("Should return only Tools with matching TITLE and TAG")
+    void findByTagAndTitle_Scenario04() {
+        // Arrange
+        toolTestHelper.createAndSaveTools();
+
+        // Act
+        var result = toolRepository.findByTagAndTitle(PageRequest.of(0, 10), "web", "ti");
+
+        // Assert
+        Assertions.assertEquals(2, result.getTotalElements());
+        Assertions.assertTrue(result.getContent().stream().allMatch(r -> r.getTitle().contains("ti")));
+        Assertions.assertTrue(result.getContent().stream().allMatch(r -> r.getTags().contains("web")));
+    }
+    @Test
+    @DisplayName("Should return correct pagination ordered by title")
+    void findByTagAndTitle_Scenario05() {
+        // Arrange
+        toolTestHelper.createAndSaveTools();
+
+        // Act
+        var result = toolRepository.findByTagAndTitle(PageRequest.of(2, 3), null, null);
+
+        // Assert
+        Assertions.assertEquals(3, result.getContent().size());
+        assertThat(result.getContent())
+                .extracting(Tool::getTitle)
+                .containsExactly("Notion", "PostgreSQL", "Postman");
+    }
+    @Test
+    @DisplayName("Should return empty page when TAG does not exist")
+    void findByTagAndTitle_Scenario06() {
+        // Arrange
+        toolTestHelper.createAndSaveTools();
+
+        // Act
+        var result = toolRepository.findByTagAndTitle(PageRequest.of(0, 10), "nonexistentTag", null);
+
+        // Assert
+        Assertions.assertEquals(0, result.getTotalElements());
+    }
+    @Test
+    @DisplayName("Should return empty page when TITLE does not exist")
+    void findByTagAndTitle_Scenario07() {
+        // Arrange
+        toolTestHelper.createAndSaveTools();
+
+        // Act
+        var result = toolRepository.findByTagAndTitle(PageRequest.of(0, 10), null, "nonexistentTitle");
+
+        // Assert
+        Assertions.assertEquals(0, result.getTotalElements());
     }
 
 }

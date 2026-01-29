@@ -67,7 +67,7 @@ public class ToolTagServiceTest {
     @DisplayName("Should do nothing when tags to delete don't exist in the tool")
     void deleteToolTagByName_Scenario02() {
         var toBeDeletedTags = new ArrayList<>(Arrays.asList("tag1", "tag2", "tag3"));
-        var toolTags = List.of("api", "json", "schema", "node", "github", "rest");
+        var toolTags = new ArrayList<>(List.of("api", "json", "schema", "node", "github", "rest"));
 
         var tool = new Tool(1L, "Notion", "https://notion.so",
                 "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized.",
