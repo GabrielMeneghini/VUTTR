@@ -1,6 +1,6 @@
-package com.apiRest.VUTTR.configurations.security;
+package com.apirest.vuttr.config.security;
 
-import com.apiRest.VUTTR.exceptions.ErrorResponse;
+import com.apirest.vuttr.exceptions.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

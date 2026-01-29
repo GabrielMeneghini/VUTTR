@@ -1,7 +1,7 @@
-package com.apiRest.VUTTR.validations.validators;
+package com.apirest.vuttr.validations.validators;
 
-import com.apiRest.VUTTR.repositories.UserRepository;
-import com.apiRest.VUTTR.validations.anotations.UniqueEmail;
+import com.apirest.vuttr.repositories.UserRepository;
+import com.apirest.vuttr.validations.anotations.UniqueEmail;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
-package com.apiRest.VUTTR.services;
+package com.apirest.vuttr.services;
 
-import com.apiRest.VUTTR.entities.User;
-import com.apiRest.VUTTR.helpers.KeyLoader;
+import com.apirest.vuttr.entities.User;
+import com.apirest.vuttr.helpers.KeyLoader;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.stereotype.Service;

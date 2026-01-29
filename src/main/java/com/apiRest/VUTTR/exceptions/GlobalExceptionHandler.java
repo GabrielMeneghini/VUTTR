@@ -1,4 +1,4 @@
-package com.apiRest.VUTTR.exceptions;
+package com.apirest.vuttr.exceptions;
 
 import com.auth0.jwt.exceptions.JWTCreationException;
 import jakarta.servlet.http.HttpServletRequest;

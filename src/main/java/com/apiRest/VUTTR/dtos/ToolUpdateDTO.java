@@ -1,7 +1,7 @@
-package com.apiRest.VUTTR.dtos;
+package com.apirest.vuttr.dtos;
 
-import com.apiRest.VUTTR.validations.anotations.UniqueLink;
-import com.apiRest.VUTTR.validations.anotations.UniqueTitle;
+import com.apirest.vuttr.validations.anotations.UniqueLink;
+import com.apirest.vuttr.validations.anotations.UniqueTitle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.URL;
 

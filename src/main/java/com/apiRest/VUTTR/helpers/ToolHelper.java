@@ -1,8 +1,8 @@
-package com.apiRest.VUTTR.helpers;
+package com.apirest.vuttr.helpers;
 
-import com.apiRest.VUTTR.entities.Tool;
-import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
-import com.apiRest.VUTTR.repositories.ToolRepository;
+import com.apirest.vuttr.entities.Tool;
+import com.apirest.vuttr.exceptions.ResourceNotFoundException;
+import com.apirest.vuttr.repositories.ToolRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

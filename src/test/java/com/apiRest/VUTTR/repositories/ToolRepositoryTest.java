@@ -1,7 +1,7 @@
-package com.apiRest.VUTTR.repositories;
+package com.apirest.vuttr.repositories;
 
-import com.apiRest.VUTTR.entities.Tool;
-import com.apiRest.VUTTR.testhelpers.ToolTestHelper;
+import com.apirest.vuttr.entities.Tool;
+import com.apirest.vuttr.testhelpers.ToolTestHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

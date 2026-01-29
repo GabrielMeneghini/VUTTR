@@ -1,8 +1,8 @@
-package com.apiRest.VUTTR.services;
+package com.apirest.vuttr.services;
 
-import com.apiRest.VUTTR.dtos.ToolDTO;
-import com.apiRest.VUTTR.entities.Tool;
-import com.apiRest.VUTTR.helpers.ToolHelper;
+import com.apirest.vuttr.dtos.ToolDTO;
+import com.apirest.vuttr.entities.Tool;
+import com.apirest.vuttr.helpers.ToolHelper;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.apiRest.VUTTR.helpers.ToolHelper.removeDuplicateAndBlankTags;
+import static com.apirest.vuttr.helpers.ToolHelper.removeDuplicateAndBlankTags;
 
 @Service
 @RequiredArgsConstructor

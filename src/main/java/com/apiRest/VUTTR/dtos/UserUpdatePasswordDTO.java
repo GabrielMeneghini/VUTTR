@@ -1,7 +1,7 @@
-package com.apiRest.VUTTR.dtos;
+package com.apirest.vuttr.dtos;
 
-import com.apiRest.VUTTR.validations.PasswordMatchesInterface;
-import com.apiRest.VUTTR.validations.anotations.PasswordMatches;
+import com.apirest.vuttr.validations.PasswordMatchesInterface;
+import com.apirest.vuttr.validations.anotations.PasswordMatches;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

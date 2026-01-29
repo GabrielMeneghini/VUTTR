@@ -1,6 +1,6 @@
-package com.apiRest.VUTTR.services;
+package com.apirest.vuttr.services;
 
-import com.apiRest.VUTTR.repositories.UserRepository;
+import com.apirest.vuttr.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,6 +1,6 @@
-package com.apiRest.VUTTR.entities;
+package com.apirest.vuttr.entities;
 
-import com.apiRest.VUTTR.dtos.UserRegisterDTO;
+import com.apirest.vuttr.dtos.UserRegisterDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

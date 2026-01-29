@@ -1,8 +1,8 @@
-package com.apiRest.VUTTR.controllers;
+package com.apirest.vuttr.controllers;
 
-import com.apiRest.VUTTR.entities.User;
-import com.apiRest.VUTTR.repositories.UserRepository;
-import com.apiRest.VUTTR.services.TokenService;
+import com.apirest.vuttr.entities.User;
+import com.apirest.vuttr.repositories.UserRepository;
+import com.apirest.vuttr.services.TokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

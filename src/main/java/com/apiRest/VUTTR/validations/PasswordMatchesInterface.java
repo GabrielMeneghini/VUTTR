@@ -1,4 +1,4 @@
-package com.apiRest.VUTTR.validations;
+package com.apirest.vuttr.validations;
 
 public interface PasswordMatchesInterface {
     String getPassword();

@@ -1,7 +1,7 @@
-package com.apiRest.VUTTR.controllers;
+package com.apirest.vuttr.controllers;
 
-import com.apiRest.VUTTR.dtos.ToolDTO;
-import com.apiRest.VUTTR.services.ToolTagService;
+import com.apirest.vuttr.dtos.ToolDTO;
+import com.apirest.vuttr.services.ToolTagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;

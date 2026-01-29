@@ -1,6 +1,6 @@
-package com.apiRest.VUTTR.repositories;
+package com.apirest.vuttr.repositories;
 
-import com.apiRest.VUTTR.entities.User;
+import com.apirest.vuttr.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

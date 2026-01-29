@@ -1,7 +1,7 @@
-package com.apiRest.VUTTR.testhelpers;
+package com.apirest.vuttr.testhelpers;
 
-import com.apiRest.VUTTR.entities.Tool;
-import com.apiRest.VUTTR.repositories.ToolRepository;
+import com.apirest.vuttr.entities.Tool;
+import com.apirest.vuttr.repositories.ToolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package com.apiRest.VUTTR;
+package com.apirest.vuttr;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

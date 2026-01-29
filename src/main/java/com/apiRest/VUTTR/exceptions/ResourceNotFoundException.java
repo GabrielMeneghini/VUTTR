@@ -1,4 +1,4 @@
-package com.apiRest.VUTTR.exceptions;
+package com.apirest.vuttr.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
 

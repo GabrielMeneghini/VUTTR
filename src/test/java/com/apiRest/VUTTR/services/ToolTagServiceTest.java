@@ -1,8 +1,8 @@
-package com.apiRest.VUTTR.services;
+package com.apirest.vuttr.services;
 
-import com.apiRest.VUTTR.entities.Tool;
-import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
-import com.apiRest.VUTTR.helpers.ToolHelper;
+import com.apirest.vuttr.entities.Tool;
+import com.apirest.vuttr.exceptions.ResourceNotFoundException;
+import com.apirest.vuttr.helpers.ToolHelper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

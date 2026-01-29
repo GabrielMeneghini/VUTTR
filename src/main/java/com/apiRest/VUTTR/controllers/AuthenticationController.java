@@ -1,9 +1,9 @@
-package com.apiRest.VUTTR.controllers;
+package com.apirest.vuttr.controllers;
 
-import com.apiRest.VUTTR.dtos.JwtDTO;
-import com.apiRest.VUTTR.dtos.UserLoginDTO;
-import com.apiRest.VUTTR.entities.User;
-import com.apiRest.VUTTR.services.TokenService;
+import com.apirest.vuttr.dtos.JwtDTO;
+import com.apirest.vuttr.dtos.UserLoginDTO;
+import com.apirest.vuttr.entities.User;
+import com.apirest.vuttr.services.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;

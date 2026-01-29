@@ -1,8 +1,7 @@
-package com.apiRest.VUTTR.controllers;
+package com.apirest.vuttr.controllers;
 
-import com.apiRest.VUTTR.entities.Tool;
-import com.apiRest.VUTTR.repositories.ToolRepository;
-import jakarta.persistence.EntityManager;
+import com.apirest.vuttr.entities.Tool;
+import com.apirest.vuttr.repositories.ToolRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

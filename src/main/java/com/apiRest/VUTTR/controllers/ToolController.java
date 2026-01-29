@@ -1,9 +1,9 @@
-package com.apiRest.VUTTR.controllers;
+package com.apirest.vuttr.controllers;
 
-import com.apiRest.VUTTR.dtos.ToolCreateDTO;
-import com.apiRest.VUTTR.dtos.ToolDTO;
-import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
-import com.apiRest.VUTTR.services.ToolService;
+import com.apirest.vuttr.dtos.ToolCreateDTO;
+import com.apirest.vuttr.dtos.ToolDTO;
+import com.apirest.vuttr.dtos.ToolUpdateDTO;
+import com.apirest.vuttr.services.ToolService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

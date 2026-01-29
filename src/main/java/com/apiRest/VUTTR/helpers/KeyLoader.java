@@ -1,6 +1,6 @@
-package com.apiRest.VUTTR.helpers;
+package com.apirest.vuttr.helpers;
 
-import com.apiRest.VUTTR.exceptions.KeyFileNotFoundException;
+import com.apirest.vuttr.exceptions.KeyFileNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;

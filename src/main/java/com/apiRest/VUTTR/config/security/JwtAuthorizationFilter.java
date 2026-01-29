@@ -1,8 +1,8 @@
-package com.apiRest.VUTTR.filters;
+package com.apirest.vuttr.config.security;
 
-import com.apiRest.VUTTR.exceptions.ErrorResponse;
-import com.apiRest.VUTTR.repositories.UserRepository;
-import com.apiRest.VUTTR.services.TokenService;
+import com.apirest.vuttr.exceptions.ErrorResponse;
+import com.apirest.vuttr.repositories.UserRepository;
+import com.apirest.vuttr.services.TokenService;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;

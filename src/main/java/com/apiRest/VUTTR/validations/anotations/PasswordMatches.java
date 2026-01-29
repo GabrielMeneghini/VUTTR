@@ -1,6 +1,6 @@
-package com.apiRest.VUTTR.validations.anotations;
+package com.apirest.vuttr.validations.anotations;
 
-import com.apiRest.VUTTR.validations.validators.PasswordMatchesValidator;
+import com.apirest.vuttr.validations.validators.PasswordMatchesValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

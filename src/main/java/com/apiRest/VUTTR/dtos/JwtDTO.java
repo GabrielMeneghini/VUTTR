@@ -1,4 +1,4 @@
-package com.apiRest.VUTTR.dtos;
+package com.apirest.vuttr.dtos;
 
 public record JwtDTO(String jwt) {
 }

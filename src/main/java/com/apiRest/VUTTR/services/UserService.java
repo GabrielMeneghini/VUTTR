@@ -1,9 +1,9 @@
-package com.apiRest.VUTTR.services;
+package com.apirest.vuttr.services;
 
-import com.apiRest.VUTTR.dtos.UserRegisterDTO;
-import com.apiRest.VUTTR.dtos.UserUpdatePasswordDTO;
-import com.apiRest.VUTTR.entities.User;
-import com.apiRest.VUTTR.repositories.UserRepository;
+import com.apirest.vuttr.dtos.UserRegisterDTO;
+import com.apirest.vuttr.dtos.UserUpdatePasswordDTO;
+import com.apirest.vuttr.entities.User;
+import com.apirest.vuttr.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

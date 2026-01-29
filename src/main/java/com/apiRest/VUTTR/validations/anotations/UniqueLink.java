@@ -1,6 +1,6 @@
-package com.apiRest.VUTTR.validations.anotations;
+package com.apirest.vuttr.validations.anotations;
 
-import com.apiRest.VUTTR.validations.validators.UniqueLinkValidator;
+import com.apirest.vuttr.validations.validators.UniqueLinkValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

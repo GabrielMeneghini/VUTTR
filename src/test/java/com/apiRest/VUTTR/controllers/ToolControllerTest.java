@@ -1,8 +1,8 @@
-package com.apiRest.VUTTR.controllers;
+package com.apirest.vuttr.controllers;
 
-import com.apiRest.VUTTR.entities.Tool;
-import com.apiRest.VUTTR.repositories.ToolRepository;
-import com.apiRest.VUTTR.testhelpers.ToolTestHelper;
+import com.apirest.vuttr.entities.Tool;
+import com.apirest.vuttr.repositories.ToolRepository;
+import com.apirest.vuttr.testhelpers.ToolTestHelper;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

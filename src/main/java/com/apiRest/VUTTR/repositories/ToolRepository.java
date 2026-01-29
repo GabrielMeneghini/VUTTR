@@ -1,6 +1,6 @@
-package com.apiRest.VUTTR.repositories;
+package com.apirest.vuttr.repositories;
 
-import com.apiRest.VUTTR.entities.Tool;
+import com.apirest.vuttr.entities.Tool;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;

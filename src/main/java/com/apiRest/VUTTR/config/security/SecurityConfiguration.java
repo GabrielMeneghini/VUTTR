@@ -1,6 +1,5 @@
-package com.apiRest.VUTTR.configurations.security;
+package com.apirest.vuttr.config.security;
 
-import com.apiRest.VUTTR.filters.JwtAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

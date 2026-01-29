@@ -1,6 +1,6 @@
-package com.apiRest.VUTTR.dtos;
+package com.apirest.vuttr.dtos;
 
-import com.apiRest.VUTTR.entities.Tool;
+import com.apirest.vuttr.entities.Tool;
 
 import java.util.List;
 

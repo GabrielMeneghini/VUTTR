@@ -1,13 +1,13 @@
-package com.apiRest.VUTTR.services;
+package com.apirest.vuttr.services;
 
-import com.apiRest.VUTTR.dtos.ToolCreateDTO;
-import com.apiRest.VUTTR.dtos.ToolDTO;
-import com.apiRest.VUTTR.dtos.ToolUpdateDTO;
-import com.apiRest.VUTTR.entities.Tool;
-import com.apiRest.VUTTR.exceptions.NoUpdateDetectedException;
-import com.apiRest.VUTTR.exceptions.ResourceNotFoundException;
-import com.apiRest.VUTTR.helpers.ToolHelper;
-import com.apiRest.VUTTR.repositories.ToolRepository;
+import com.apirest.vuttr.dtos.ToolCreateDTO;
+import com.apirest.vuttr.dtos.ToolDTO;
+import com.apirest.vuttr.dtos.ToolUpdateDTO;
+import com.apirest.vuttr.entities.Tool;
+import com.apirest.vuttr.exceptions.NoUpdateDetectedException;
+import com.apirest.vuttr.exceptions.ResourceNotFoundException;
+import com.apirest.vuttr.helpers.ToolHelper;
+import com.apirest.vuttr.repositories.ToolRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
