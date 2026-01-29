@@ -25,12 +25,8 @@ public class ToolService {
     private final ToolHelper toolHelper;
 
     @Transactional(readOnly = true)
-    public List<ToolDTO> findTools(int page, int numItems, String tag) {
-        if(tag==null || tag.isBlank()) {
-            return toolRepository.findAllFetchingTags(PageRequest.of(page, numItems)).stream().map(ToolDTO::new).toList();
-        } else {
-            return toolRepository.findByTag(PageRequest.of(page, numItems), tag).stream().map(ToolDTO::new).toList();
-        }
+    public List<ToolDTO> findTools(int page, int numItems, String tag, String title) {
+        return toolRepository.findByTagAndTitle(PageRequest.of(page, numItems), tag, title).stream().map(ToolDTO::new).toList();
     }
 
     @Transactional(readOnly = true)
