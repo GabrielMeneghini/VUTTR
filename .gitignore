@@ -33,7 +33,7 @@ build/
 .vscode/
 
 # RSA keys
-src/main/resources/keys/
+/keys/*.pem
 
 # Environment
 .env.prod
