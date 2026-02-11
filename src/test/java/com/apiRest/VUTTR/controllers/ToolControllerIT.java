@@ -1,5 +1,6 @@
 package com.apirest.vuttr.controllers;
 
+import com.apirest.vuttr.config.AbstractIntegrationTest;
 import com.apirest.vuttr.entities.Tool;
 import com.apirest.vuttr.repositories.ToolRepository;
 import com.apirest.vuttr.testhelpers.ToolTestHelper;
@@ -10,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,9 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
-class ToolControllerTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+class ToolControllerIT extends AbstractIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -45,7 +46,7 @@ class ToolControllerTest {
     void setup() {
         toolRepository.deleteAll();
     }
-    
+
     @Test
     @DisplayName("Should return specified pagination page")
     void findTools_Scenario01() throws Exception {
