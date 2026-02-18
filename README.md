@@ -23,16 +23,16 @@ Este projeto foi desenvolvido com foco em boas práticas profissionais, arquitet
 ## 📑 Índice
 
 - [🚀 Tecnologias Utilizadas](#-tecnologias-utilizadas)
-- [🏗️ Arquitetura](#-arquitetura)
+- [🏗️ Arquitetura](#%EF%B8%8F-arquitetura)
 - [🧠 Boas Práticas Aplicadas](#-boas-práticas-aplicadas)
-- [⚙️ Pré-requisitos](#-pré-requisitos-para-rodar-o-projeto)
-- [▶️ Como Rodar o Projeto](#-como-rodar-o-projeto)
+- [⚙️ Pré-requisitos](#%EF%B8%8F-pré-requisitos-para-rodar-o-projeto)
+- [▶️ Como Rodar o Projeto](#%EF%B8%8F-como-rodar-o-projeto)
 - [🧪 Executando os Testes](#-executando-os-testes)
 - [🔐 Autenticação](#-autenticação)
 - [📘 Documentação da API](#-documentação-da-api)
-- [🗃️ Versionamento de Banco](#-versionamento-de-banco)
+- [🗃️ Versionamento de Banco](#%EF%B8%8F-versionamento-de-banco)
 - [🧩 Perfis de Ambiente](#-perfis-de-ambiente)
-- [👨‍💻 Autor](#-autor)
+- [👨‍💻 Autor](#%E2%80%8D-autor)
 
 ---
 
