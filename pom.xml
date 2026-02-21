@@ -11,7 +11,7 @@
 	<groupId>com.apiRest</groupId>
 	<artifactId>VUTTR</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>VUTTR</name>
+	<name>vuttr</name>
 	<description>Very Useful Tools to Remember - API Rest</description>
 	<url/>
 	<licenses>
@@ -171,6 +171,11 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<systemPropertyVariables>
+						<api.version>1.44</api.version>
+					</systemPropertyVariables>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
