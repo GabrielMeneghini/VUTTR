@@ -27,6 +27,7 @@ Este projeto foi desenvolvido com foco em boas práticas profissionais, arquitet
 - [🧠 Boas Práticas Aplicadas](#-boas-práticas-aplicadas)
 - [⚙️ Pré-requisitos](#%EF%B8%8F-pré-requisitos-para-rodar-o-projeto)
 - [▶️ Como Rodar o Projeto](#%EF%B8%8F-como-rodar-o-projeto)
+- [🔐 Geração automática das chaves RSA](#-geração-automática-das-chaves-rsa)
 - [🧪 Executando os Testes](#-executando-os-testes)
 - [🔐 Autenticação](#-autenticação)
 - [📘 Documentação da API](#-documentação-da-api)
@@ -51,6 +52,10 @@ Este projeto foi desenvolvido com foco em boas práticas profissionais, arquitet
 - Docker / Docker Compose
 - OpenAPI (springdoc)
 
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
+
 ---
 
 ## 🏗️ Arquitetura
@@ -68,6 +73,10 @@ Principais características:
 - Testes unitários e de integração
 - Configuração por profiles (dev, test, prod)
 
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
+
 ---
 
 ## 🧠 Boas Práticas Aplicadas
@@ -80,10 +89,18 @@ Principais características:
 - Segurança stateless
 - Testes isolados e reproduzíveis
 
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
+
 ---
 
 ## ⚙️ Pré-requisitos para rodar o projeto
 - Docker 
+
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
 
 ---
 
@@ -109,6 +126,26 @@ docker compose --env-file .env.prod.example -f docker-compose.yml -f docker-comp
 http://localhost:3000
 ```
 
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
+
+---
+
+## 🔐 Geração automática das chaves RSA
+Na primeira execução do projeto, as chaves RSA utilizadas na assinatura dos tokens JWT são geradas automaticamente via Docker.
+As chaves são criadas na pasta:
+```
+keys/
+```
+Se as chaves já existirem, elas serão reutilizadas.
+
+Nenhuma configuração adicional é nessária.
+
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
+
 ---
 
 ## 🧪 Executando os Testes
@@ -123,6 +160,10 @@ Para rodar todos os testes:
 - Utilizam Testcontainers
 - Sobem um container PostgreSQL automaticamente
 - Necessitam do Docker em execução
+
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
 
 ---
 
@@ -141,11 +182,17 @@ Fluxo:
 Authorization: Bearer {token}
 ```
 
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
+
 ---
 
 ## 📘 Documentação da API
 
 Após iniciar a aplicação, acesse:
+
+### Swagger UI
 ```
 http://localhost:3000/swagger-ui.html
 ```
@@ -154,6 +201,17 @@ http://localhost:3000/swagger-ui.html
 ![Swagger UI](docs/images/swaggerUI.png)
 
 Documentação interativa gerada automaticamente via OpenAPI.
+
+### OpenAPI JSON
+A especificação OpenAPI pode ser acessada em:
+```
+http://localhost:3000/v3/api-docs
+```
+Esse endpoint contém a descrição completa da API em formato OpenAPI JSON.
+
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
 
 ---
 
@@ -167,6 +225,10 @@ Scripts ficam localizados em:
 src/main/resources/db/migration
 ```
 
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
+
 ---
 
 ## 🧩 Perfis de Ambiente
@@ -179,6 +241,10 @@ O projeto possui os seguintes perfis configurados:
 
 Testcontainers é utilizado exclusivamente no profile de testes.
 
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
+
 ---
 
 ## 👨‍💻 Autor
@@ -186,3 +252,7 @@ Testcontainers é utilizado exclusivamente no profile de testes.
 - Gabriel Meneghini
 - LinkedIn: https://www.linkedin.com/in/gabriel-meneghini-717109118/
 - GitHub: https://github.com/GabrielMeneghini
+
+<div align="right">
+   <a href="#-índice">⤴️ Voltar ao índice</a>
+</div>
