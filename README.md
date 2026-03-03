@@ -96,7 +96,8 @@ Principais características:
 ---
 
 ## ⚙️ Pré-requisitos para rodar o projeto
-- Docker 
+- Docker
+- Java 21+
 
 <div align="right">
    <a href="#-índice">⤴️ Voltar ao índice</a>
